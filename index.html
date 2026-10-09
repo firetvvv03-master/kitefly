@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kite Ascent Arcade - Next-Gen Ultimate Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #020617;
+            color: #f9fafb;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+        .arcade-font {
+            font-family: 'Press Start 2P', monospace;
+        }
+        canvas {
+            display: block;
+            touch-action: none;
+        }
+        .glow-text {
+            text-shadow: 0 0 25px rgba(56, 189, 248, 0.7), 0 0 50px rgba(168, 85, 247, 0.5);
+        }
+    </style>
+</head>
+<body class="w-screen h-screen flex flex-col items-center justify-center relative overflow-hidden">
+
+    <div id="game-container" class="relative w-full max-w-md h-full max-h-none md:max-h-[880px] shadow-2xl rounded-none md:rounded-3xl overflow-hidden bg-slate-950 border-0 md:border-4 border-sky-500/40 flex flex-col">
+        
+        <!-- Top HUD Header -->
+        <div id="hud" class="absolute top-0 left-0 w-full p-4 flex justify-between items-center z-20 bg-gradient-to-b from-slate-950/90 via-slate-950/40 to-transparent pointer-events-none">
+            <div class="flex flex-col">
+                <span class="text-[9px] arcade-font text-sky-400">ALTITUDE</span>
+                <span id="hud-altitude" class="text-sm arcade-font text-white drop-shadow">0 m</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="text-[9px] arcade-font text-amber-400">STARS</span>
+                <span id="hud-coins" class="text-sm arcade-font text-amber-300 drop-shadow">0</span>
+            </div>
+            <div class="flex flex-col items-end">
+                <span class="text-[9px] arcade-font text-emerald-400">STRING HP</span>
+                <div class="w-20 h-3 bg-slate-900 rounded-full overflow-hidden border border-emerald-500/60 mt-1 shadow-inner">
+                    <div id="hud-hp-bar" class="w-full h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-150"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Menu Navigation Bar -->
+        <div class="absolute top-14 left-0 w-full px-4 flex justify-between items-center z-20 pointer-events-auto">
+            <button id="top-shop-btn" class="px-3 py-1.5 bg-slate-900/80 hover:bg-slate-800 text-amber-300 border border-amber-500/40 rounded-xl arcade-font text-[7px] shadow-lg transition active:scale-95">✨ SHOP</button>
+            <button id="top-newgame-btn" class="px-3 py-1.5 bg-slate-900/80 hover:bg-slate-800 text-sky-300 border border-sky-500/40 rounded-xl arcade-font text-[7px] shadow-lg transition active:scale-95">🔄 RESTART</button>
+        </div>
+
+        <!-- Boss Health Bar Overlay (Lowered layout position) -->
+        <div id="boss-hud" class="absolute top-28 left-1/2 -translate-x-1/2 w-4/5 bg-slate-900/95 border-2 border-rose-500 rounded-xl p-2.5 z-25 hidden flex-col items-center shadow-2xl backdrop-blur-md">
+            <div class="flex justify-between w-full text-[9px] arcade-font text-rose-400 mb-1">
+                <span id="boss-name">BOSS KITE</span>
+                <span id="boss-hp-text">100%</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden border border-rose-600/70 shadow-inner">
+                <div id="boss-hp-bar" class="w-full h-full bg-gradient-to-r from-rose-600 to-amber-500 transition-all duration-100"></div>
+            </div>
+        </div>
+
+        <!-- Canvas Game Layer -->
+        <canvas id="gameCanvas" class="w-full h-full cursor-crosshair"></canvas>
+
+        <!-- On-Screen Power Attack Button -->
+        <div id="power-hud-btn" class="absolute bottom-6 right-6 z-20 hidden">
+            <button id="power-action-btn" class="w-16 h-16 bg-gradient-to-tr from-fuchsia-600 via-purple-600 to-sky-400 hover:scale-105 active:scale-95 rounded-full border-2 border-white/80 shadow-2xl flex items-center justify-center text-white arcade-font text-[10px] transition">
+                💥
+            </button>
+        </div>
+
+        <!-- Main Menu Overlay -->
+        <div id="menu-screen" class="absolute inset-0 bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center z-30 p-6 text-center">
+            <div class="mb-3 px-3 py-1 bg-sky-500/10 border border-sky-500/30 rounded-full text-sky-400 arcade-font text-[8px] tracking-widest uppercase animate-pulse">Next-Gen Ultimate Edition</div>
+            <h1 class="text-3xl md:text-4xl font-extrabold arcade-font text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-pink-400 to-amber-300 mb-2 glow-text">KITE ASCENT</h1>
+            <p class="text-xs text-slate-400 mb-6 max-w-[260px]">Immersive neon skies, detailed obstacles, and flawless boss encounters!</p>
+            
+            <div class="flex flex-col gap-3 w-full max-w-xs">
+                <button id="start-btn" class="w-full py-4 bg-gradient-to-r from-pink-500 via-indigo-600 to-sky-500 hover:opacity-90 text-white font-bold arcade-font text-xs rounded-2xl shadow-xl transform transition active:scale-95 border-b-4 border-indigo-900">LAUNCH KITE</button>
+                <button id="shop-btn" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold arcade-font text-xs rounded-2xl shadow-lg border border-amber-500/40 transform transition active:scale-95 flex items-center justify-center gap-2">
+                    <span>✨ KITE WARDROBE</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Shop & Hangar Overlay -->
+        <div id="shop-screen" class="absolute inset-0 bg-slate-950/98 backdrop-blur-2xl flex flex-col items-center justify-between z-30 p-6 hidden">
+            <div class="w-full max-w-xs flex justify-between items-center mt-2">
+                <h2 class="text-base font-black arcade-font text-pink-400">KITE MODELS</h2>
+                <div class="flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-full border border-amber-500/40">
+                    <span class="text-[9px] arcade-font text-slate-400">Stars:</span>
+                    <span id="shop-coins" class="text-xs arcade-font text-amber-300">0</span>
+                </div>
+            </div>
+
+            <div class="w-full max-w-xs flex-1 my-4 overflow-y-auto pr-1 flex flex-col gap-3">
+                <div class="text-[10px] font-bold text-slate-300 tracking-wider">CHOOSE YOUR KITE (FREE)</div>
+                <div id="skin-grid" class="grid grid-cols-2 gap-2.5"></div>
+
+                <div class="text-[10px] font-bold text-slate-300 tracking-wider mt-2">UPGRADES</div>
+                <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <div class="text-xs font-bold text-white">Reinforced Line</div>
+                        <div class="text-[9px] text-slate-400" id="desc-string">+25 Max HP</div>
+                    </div>
+                    <button id="buy-string" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold arcade-font text-[8px] rounded-xl shadow">50s</button>
+                </div>
+                <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <div class="text-xs font-bold text-white">Aerodynamic Frame</div>
+                        <div class="text-[9px] text-slate-400" id="desc-speed">+Agility Speed</div>
+                    </div>
+                    <button id="buy-speed" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold arcade-font text-[8px] rounded-xl shadow">75s</button>
+                </div>
+            </div>
+
+            <button id="back-to-menu" class="w-full max-w-xs py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold arcade-font text-xs rounded-2xl shadow border border-slate-700">BACK TO MENU</button>
+        </div>
+
+        <!-- Game Over Overlay -->
+        <div id="gameover-screen" class="absolute inset-0 bg-slate-950/90 backdrop-blur-xl flex flex-col items-center justify-center z-30 p-6 text-center hidden">
+            <h2 class="text-2xl font-black arcade-font text-rose-500 mb-1">STRING SNAPPED!</h2>
+            <p class="text-xs text-slate-400 mb-6">Your kite lost tension and drifted down.</p>
+
+            <div class="bg-slate-900/90 border border-slate-800/80 p-4 rounded-2xl mb-6 w-full max-w-xs flex flex-col gap-2.5 shadow-xl">
+                <div class="flex justify-between text-xs"><span class="text-slate-400">Altitude Reached:</span><span id="go-altitude" class="font-bold text-white arcade-font text-[10px]">0 m</span></div>
+                <div class="flex justify-between text-xs"><span class="text-slate-400">Stars Collected:</span><span id="go-coins" class="font-bold text-amber-300 arcade-font text-[10px]">0</span></div>
+                <div class="flex justify-between text-xs"><span class="text-slate-400">Personal Best:</span><span id="go-high" class="font-bold text-sky-400 arcade-font text-[10px]">0 m</span></div>
+            </div>
+
+            <div class="flex flex-col gap-3 w-full max-w-xs">
+                <button id="restart-btn" class="w-full py-4 bg-gradient-to-r from-pink-500 to-indigo-600 hover:opacity-90 text-white font-bold arcade-font text-xs rounded-2xl shadow-lg border-b-4 border-indigo-900">FLY AGAIN</button>
+                <button id="menu-btn" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold arcade-font text-xs rounded-2xl shadow border border-slate-700">MAIN MENU</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        class SoundEngine {
+            constructor() { this.ctx = null; }
+            init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+            playTone(freq, type, duration, vol = 0.1) {
+                if (!this.ctx) return;
+                try {
+                    let osc = this.ctx.createOscillator();
+                    let gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) {}
+            }
+            coin() { this.playTone(880, 'sine', 0.08, 0.12); setTimeout(()=>this.playTone(1320, 'sine', 0.12, 0.12), 70); }
+            hit() { this.playTone(130, 'sawtooth', 0.25, 0.2); }
+            powerup() { this.playTone(523.25, 'triangle', 0.1, 0.1); setTimeout(()=>this.playTone(659.25, 'triangle', 0.1, 0.1), 70); setTimeout(()=>this.playTone(783.99, 'triangle', 0.2, 0.15), 140); }
+            bossWarn() { this.playTone(220, 'sawtooth', 0.4, 0.25); }
+            explosion() { this.playTone(80, 'sawtooth', 0.4, 0.3); }
+            powerAttack() { this.playTone(587.33, 'square', 0.3, 0.2); setTimeout(()=>this.playTone(880, 'sawtooth', 0.4, 0.25), 100); }
+        }
+
+        const audio = new SoundEngine();
+
+        const KITE_SKINS = [
+            { id: 'rainbow', name: 'Aurora Stunt', shape: 'diamond', price: 0, unlocked: true, primary: '#ec4899', secondary: '#38bdf8', accent: '#facc15', tailColor: '#a855f7' },
+            { id: 'dragon', name: 'Golden Delta', shape: 'dragon', price: 0, unlocked: true, primary: '#eab308', secondary: '#f97316', accent: '#ef4444', tailColor: '#facc15' },
+            { id: 'cyber', name: 'Carbon Stealth', shape: 'ufo', price: 0, unlocked: true, primary: '#06b6d4', secondary: '#8b5cf6', accent: '#34d399', tailColor: '#06b6d4' },
+            { id: 'sakura', name: 'Sakura Parafoil', shape: 'flower', price: 0, unlocked: true, primary: '#f472b6', secondary: '#fb7185', accent: '#ffffff', tailColor: '#f43f5e' },
+            { id: 'phoenix', name: 'Solar Thermal', shape: 'bird', price: 0, unlocked: true, primary: '#f97316', secondary: '#dc2626', accent: '#fde047', tailColor: '#fbbf24' },
+            { id: 'emerald', name: 'Emerald Box', shape: 'butterfly', price: 0, unlocked: true, primary: '#10b981', secondary: '#059669', accent: '#6ee7b7', tailColor: '#34d399' }
+        ];
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let gameState = 'MENU';
+        let altitude = 0;
+        let highAltitude = parseInt(localStorage.getItem('kite_high_v8') || '0');
+        let coins = parseInt(localStorage.getItem('kite_coins_v8') || '40');
+        let sessionCoins = 0;
+
+        let activeSkinId = localStorage.getItem('kite_active_skin_v8') || 'rainbow';
+
+        let player = {
+            x: 0, y: 0, width: 50, height: 60,
+            vx: 0, targetX: 0, maxHp: 100, hp: 100,
+            speed: 6.0, shield: false, magnetTimer: 0, boostTimer: 0,
+            invincibleTimer: 0, powerCooldown: 0
+        };
+
+        let upgrades = {
+            stringLevel: parseInt(localStorage.getItem('kite_up_string_v8') || '0'),
+            speedLevel: parseInt(localStorage.getItem('kite_up_speed_v8') || '0')
+        };
+
+        let obstacles = [];
+        let particles = [];
+        let powerups = [];
+        let projectiles = [];
+        let boss = null;
+        let spawnTimer = 0;
+        let distanceTraveled = 0;
+
+        let keys = { ArrowLeft: false, ArrowRight: false, KeyA: false, KeyD: false, Space: false };
+        let pointerX = null;
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            if (gameState === 'MENU') {
+                player.x = canvas.width / 2;
+                player.y = canvas.height - 150;
+            }
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function saveSkins() {
+            localStorage.setItem('kite_active_skin_v8', activeSkinId);
+            localStorage.setItem('kite_coins_v8', coins);
+        }
+
+        function renderShopUI() {
+            document.getElementById('shop-coins').innerText = coins;
+            document.getElementById('hud-coins').innerText = coins;
+
+            let grid = document.getElementById('skin-grid');
+            grid.innerHTML = '';
+
+            KITE_SKINS.forEach(skin => {
+                let isEquipped = activeSkinId === skin.id;
+                let card = document.createElement('div');
+                card.className = `p-3 rounded-2xl border flex flex-col items-center justify-between gap-2 transition cursor-pointer ${isEquipped ? 'bg-pink-500/20 border-pink-400' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'}`;
+                
+                card.innerHTML = `
+                    <div class="w-10 h-10 rounded-xl shadow flex items-center justify-center relative overflow-hidden" style="background: linear-gradient(135deg, ${skin.primary}, ${skin.secondary});">
+                        <div class="absolute inset-0 bg-white/30 backdrop-blur-[1px]"></div>
+                        <span class="text-[10px] uppercase font-bold text-white z-10">${skin.shape[0]}</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-[10px] font-bold text-white">${skin.name}</div>
+                        <div class="text-[8px] text-pink-400 font-bold">${isEquipped ? 'EQUIPPED' : 'FREE'}</div>
+                    </div>
+                `;
+
+                card.onclick = () => {
+                    activeSkinId = skin.id;
+                    saveSkins();
+                    renderShopUI();
+                };
+                grid.appendChild(card);
+            });
+
+            let stringCost = 50 * (upgrades.stringLevel + 1);
+            let speedCost = 75 * (upgrades.speedLevel + 1);
+            document.getElementById('buy-string').innerText = upgrades.stringLevel >= 3 ? 'MAX' : `${stringCost}s`;
+            document.getElementById('buy-speed').innerText = upgrades.speedLevel >= 3 ? 'MAX' : `${speedCost}s`;
+        }
+
+        function startGame() {
+            audio.init();
+            gameState = 'PLAYING';
+            distanceTraveled = 0;
+            altitude = 0;
+            sessionCoins = 0;
+            obstacles = [];
+            particles = [];
+            powerups = [];
+            projectiles = [];
+            boss = null;
+            spawnTimer = 0;
+
+            player.maxHp = 100 + (upgrades.stringLevel * 25);
+            player.hp = player.maxHp;
+            player.speed = 5.5 + (upgrades.speedLevel * 0.8);
+            player.shield = false;
+            player.magnetTimer = 0;
+            player.boostTimer = 0;
+            player.invincibleTimer = 0;
+            player.powerCooldown = 0;
+
+            player.x = canvas.width / 2;
+            player.targetX = canvas.width / 2;
+            player.y = canvas.height - 140;
+
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('shop-screen').classList.add('hidden');
+            document.getElementById('gameover-screen').classList.add('hidden');
+            document.getElementById('boss-hud').classList.add('hidden');
+            document.getElementById('power-hud-btn').classList.remove('hidden');
+        }
+
+        function triggerPowerAttack() {
+            if (gameState !== 'PLAYING' || player.powerCooldown > 0) return;
+            audio.powerAttack();
+            player.powerCooldown = 40;
+
+            projectiles.push({
+                x: player.x,
+                y: player.y - 20,
+                vy: -13,
+                width: 18,
+                height: 42,
+                color: '#38bdf8'
+            });
+
+            addSparkles(player.x, player.y, '#38bdf8');
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (keys.hasOwnProperty(e.code)) keys[e.code] = true;
+            if (e.code === 'Space') {
+                e.preventDefault();
+                triggerPowerAttack();
+            }
+        });
+        window.addEventListener('keyup', (e) => { if (keys.hasOwnProperty(e.code)) keys[e.code] = false; });
+
+        document.getElementById('power-action-btn').addEventListener('click', triggerPowerAttack);
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            pointerX = e.clientX - rect.left;
+        });
+        canvas.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) {
+                const rect = canvas.getBoundingClientRect();
+                pointerX = e.touches[0].clientX - rect.left;
+            }
+        }, {passive: true});
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 0) {
+                const rect = canvas.getBoundingClientRect();
+                pointerX = e.touches[0].clientX - rect.left;
+            }
+        }, {passive: true});
+
+        function spawnEntities() {
+            spawnTimer++;
+            let spawnRate = Math.max(16, 65 - Math.floor(altitude / 350));
+
+            // Trigger Boss milestones reliably
+            if (!boss && ((altitude >= 2800 && altitude < 3000 && !window.boss1Defeated) ||
+                (altitude >= 6800 && altitude < 7000 && !window.boss2Defeated))) {
+                triggerBoss(altitude >= 5000 ? 2 : 1);
+            }
+
+            if (boss) return;
+
+            if (spawnTimer >= spawnRate) {
+                spawnTimer = 0;
+                let r = Math.random();
+
+                if (r < 0.25) {
+                    obstacles.push({
+                        type: 'bird',
+                        x: Math.random() < 0.5 ? -35 : canvas.width + 35,
+                        y: -30,
+                        vx: (Math.random() - 0.5) * 3,
+                        vy: 2.5 + Math.random() * 2 + (altitude / 1000),
+                        width: 44, height: 30,
+                        wingAnim: Math.random() * Math.PI
+                    });
+                } else if (r < 0.45) {
+                    obstacles.push({
+                        type: 'drone',
+                        x: Math.random() * (canvas.width - 50) + 25,
+                        y: -40,
+                        vx: 0,
+                        vy: 2.5 + Math.random() * 2.5,
+                        width: 42, height: 42,
+                        angle: 0
+                    });
+                } else if (r < 0.60) {
+                    obstacles.push({
+                        type: 'lightning',
+                        x: Math.random() * (canvas.width - 60) + 30,
+                        y: -80,
+                        vx: 0,
+                        vy: 5 + Math.random() * 2,
+                        width: 32, height: 85
+                    });
+                } else if (r < 0.72) {
+                    obstacles.push({
+                        type: 'gust',
+                        x: Math.random() * (canvas.width - 80) + 40,
+                        y: -50,
+                        vx: (Math.random() - 0.5) * 4,
+                        vy: 3 + Math.random() * 1.5,
+                        width: 58, height: 36,
+                        pushForce: (Math.random() - 0.5) * 7
+                    });
+                } else if (r < 0.82) {
+                    obstacles.push({
+                        type: 'cloud',
+                        x: Math.random() * (canvas.width - 90) + 45,
+                        y: -60,
+                        vx: 0,
+                        vy: 2 + Math.random() * 1,
+                        width: 76, height: 46
+                    });
+                } else if (r < 0.90) {
+                    obstacles.push({
+                        type: 'asteroid',
+                        x: Math.random() * (canvas.width - 40) + 20,
+                        y: -50,
+                        vx: (Math.random() - 0.5) * 2,
+                        vy: 5.5 + Math.random() * 2.5,
+                        width: 36, height: 36,
+                        spin: Math.random() * Math.PI
+                    });
+                } else if (r < 0.94) {
+                    powerups.push({
+                        type: 'coin',
+                        x: Math.random() * (canvas.width - 30) + 15,
+                        y: -30,
+                        vy: 3,
+                        width: 24, height: 24,
+                        spin: Math.random() * Math.PI
+                    });
+                } else {
+                    let pRand = Math.random();
+                    let pType = pRand < 0.4 ? 'shield' : (pRand < 0.7 ? 'repair' : (pRand < 0.85 ? 'magnet' : 'boost'));
+                    powerups.push({
+                        type: pType,
+                        x: Math.random() * (canvas.width - 30) + 15,
+                        y: -30,
+                        vy: 2.2,
+                        width: 30, height: 30
+                    });
+                }
+            }
+        }
+
+        function triggerBoss(tier) {
+            audio.bossWarn();
+            boss = {
+                tier: tier,
+                name: tier === 1 ? 'GIANT RIVAL STUNT KITE' : 'SUPER-MASSIVE STEALTH MEGA-KITE',
+                maxHp: tier === 1 ? 350 : 550,
+                hp: tier === 1 ? 350 : 550,
+                x: canvas.width / 2,
+                y: 175, // Perfect vertical height safely beneath HUD header
+                vx: 3.5,
+                width: tier === 1 ? 210 : 240,
+                height: 110,
+                attackTimer: 0,
+                pulseAnim: 0
+            };
+            document.getElementById('boss-name').innerText = boss.name;
+            document.getElementById('boss-hud').classList.remove('hidden');
+        }
+
+        function addSparkles(x, y, color) {
+            for (let i = 0; i < 8; i++) {
+                particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6,
+                    life: 30,
+                    color: color,
+                    size: 3 + Math.random() * 4
+                });
+            }
+        }
+
+        function update() {
+            if (gameState !== 'PLAYING') return;
+
+            distanceTraveled += player.boostTimer > 0 ? 1.2 : 0.6;
+            altitude = Math.floor(distanceTraveled * 4);
+
+            if (player.powerCooldown > 0) player.powerCooldown--;
+            if (player.magnetTimer > 0) player.magnetTimer--;
+            if (player.boostTimer > 0) player.boostTimer--;
+
+            let moveDir = 0;
+            if (keys.ArrowLeft || keys.KeyA) moveDir = -1;
+            if (keys.ArrowRight || keys.KeyD) moveDir = 1;
+
+            let currentSpeed = player.speed * (player.boostTimer > 0 ? 1.6 : 1.0);
+
+            if (moveDir !== 0) {
+                player.targetX += moveDir * currentSpeed;
+                pointerX = null;
+            } else if (pointerX !== null) {
+                let dx = pointerX - player.x;
+                player.targetX += dx * 0.22;
+            }
+
+            player.targetX = Math.max(35, Math.min(canvas.width - 35, player.targetX));
+            player.x += (player.targetX - player.x) * 0.25;
+
+            if (player.invincibleTimer > 0) player.invincibleTimer--;
+
+            spawnEntities();
+
+            let currentSkin = KITE_SKINS.find(s => s.id === activeSkinId) || KITE_SKINS[0];
+            if (Math.random() < 0.8) {
+                particles.push({
+                    x: player.x + (Math.random() - 0.5) * 15,
+                    y: player.y + player.height / 2,
+                    vx: (Math.random() - 0.5) * 1.5,
+                    vy: 2 + Math.random() * 2,
+                    life: 30,
+                    color: player.boostTimer > 0 ? '#38bdf8' : currentSkin.tailColor,
+                    size: 3.5 + Math.random() * 3
+                });
+            }
+
+            // Fixed Boss Movement Logic (safely bouncing across canvas boundaries)
+            if (boss) {
+                boss.x += boss.vx;
+                let boundaryLimit = boss.width / 2 + 15;
+                if (boss.x < boundaryLimit) {
+                    boss.x = boundaryLimit;
+                    boss.vx *= -1;
+                } else if (boss.x > canvas.width - boundaryLimit) {
+                    boss.x = canvas.width - boundaryLimit;
+                    boss.vx *= -1;
+                }
+
+                boss.pulseAnim += 0.15;
+                boss.attackTimer++;
+                if (boss.attackTimer >= 35) {
+                    boss.attackTimer = 0;
+                    obstacles.push({
+                        type: 'boss_proj',
+                        x: boss.x + (Math.random() - 0.5) * 90,
+                        y: boss.y + 50,
+                        vx: (Math.random() - 0.5) * 3,
+                        vy: 4.5,
+                        width: 22, height: 22
+                    });
+                }
+            }
+
+            for (let i = projectiles.length - 1; i >= 0; i--) {
+                let pr = projectiles[i];
+                pr.y += pr.vy;
+
+                if (boss && Math.abs(pr.x - boss.x) < boss.width/2 && Math.abs(pr.y - boss.y) < boss.height/2) {
+                    boss.hp -= 50;
+                    addSparkles(pr.x, pr.y, '#f43f5e');
+                    audio.hit();
+                    projectiles.splice(i, 1);
+                    continue;
+                }
+
+                if (pr.y < -50) projectiles.splice(i, 1);
+            }
+
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                let ob = obstacles[i];
+                ob.x += ob.vx;
+                ob.y += ob.vy;
+                if (ob.type === 'bird') ob.wingAnim += 0.25;
+                if (ob.type === 'drone') ob.angle += 0.12;
+                if (ob.type === 'asteroid') ob.spin += 0.08;
+
+                let hitMargin = 14;
+                if (Math.abs(player.x - ob.x) < player.width/2 + ob.width/2 - hitMargin &&
+                    Math.abs(player.y - ob.y) < player.height/2 + ob.height/2 - hitMargin) {
+                    
+                    if (ob.type === 'gust') {
+                        player.targetX += ob.pushForce * 12;
+                        audio.powerup();
+                    } else if (ob.type === 'cloud') {
+                        player.hp -= 8;
+                        audio.hit();
+                        obstacles.splice(i, 1);
+                        continue;
+                    } else if (player.shield || player.boostTimer > 0) {
+                        player.shield = false;
+                        addSparkles(player.x, player.y, '#38bdf8');
+                        audio.hit();
+                    } else if (player.invincibleTimer === 0) {
+                        let dmg = ob.type === 'boss_proj' ? 30 : (ob.type === 'asteroid' ? 22 : 18);
+                        player.hp -= dmg;
+                        player.invincibleTimer = 50;
+                        audio.hit();
+                        addSparkles(player.x, player.y, '#f43f5e');
+                        if (ob.type === 'boss_proj' || ob.type === 'asteroid') {
+                            obstacles.splice(i, 1);
+                            continue;
+                        }
+                    }
+
+                    if (ob.type === 'bird' || ob.type === 'drone' || ob.type === 'lightning' || ob.type === 'asteroid') {
+                        obstacles.splice(i, 1);
+                        continue;
+                    }
+                }
+
+                if (ob.y > canvas.height + 60 || ob.x < -80 || ob.x > canvas.width + 80) {
+                    obstacles.splice(i, 1);
+                }
+            }
+
+            for (let i = powerups.length - 1; i >= 0; i--) {
+                let p = powerups[i];
+                p.y += p.vy;
+                if (p.type === 'coin') p.spin += 0.1;
+
+                if (player.magnetTimer > 0 && p.type === 'coin') {
+                    let dx = player.x - p.x;
+                    let dy = player.y - p.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 180) {
+                        p.x += dx * 0.12;
+                        p.y += dy * 0.12;
+                    }
+                }
+
+                if (Math.abs(player.x - p.x) < 28 && Math.abs(player.y - p.y) < 28) {
+                    if (p.type === 'coin') {
+                        sessionCoins += 1;
+                        coins += 1;
+                        audio.coin();
+                        addSparkles(p.x, p.y, '#facc15');
+                    } else if (p.type === 'shield') {
+                        player.shield = true;
+                        audio.powerup();
+                        addSparkles(p.x, p.y, '#38bdf8');
+                    } else if (p.type === 'repair') {
+                        player.hp = Math.min(player.maxHp, player.hp + 40);
+                        audio.powerup();
+                        addSparkles(p.x, p.y, '#10b981');
+                    } else if (p.type === 'magnet') {
+                        player.magnetTimer = 350;
+                        audio.powerup();
+                        addSparkles(p.x, p.y, '#a855f7');
+                    } else if (p.type === 'boost') {
+                        player.boostTimer = 250;
+                        audio.powerup();
+                        addSparkles(p.x, p.y, '#38bdf8');
+                    }
+                    powerups.splice(i, 1);
+                    continue;
+                }
+
+                if (p.y > canvas.height + 40) powerups.splice(i, 1);
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let pt = particles[i];
+                pt.x += pt.vx;
+                pt.y += pt.vy;
+                pt.life--;
+                if (pt.life <= 0) particles.splice(i, 1);
+            }
+
+            if (boss && boss.hp <= 0) {
+                audio.explosion();
+                addSparkles(boss.x, boss.y, '#f59e0b');
+                if (altitude < 5000) window.boss1Defeated = true;
+                else window.boss2Defeated = true;
+                document.getElementById('boss-hud').classList.add('hidden');
+                boss = null;
+                coins += 50;
+                sessionCoins += 50;
+            }
+
+            if (player.hp <= 0) gameOver();
+
+            document.getElementById('hud-altitude').innerText = `${altitude} m`;
+            document.getElementById('hud-coins').innerText = coins;
+            let hpPct = Math.max(0, (player.hp / player.maxHp) * 100);
+            document.getElementById('hud-hp-bar').style.width = `${hpPct}%`;
+
+            if (boss) {
+                let bHpPct = Math.max(0, (boss.hp / boss.maxHp) * 100);
+                document.getElementById('boss-hp-bar').style.width = `${bHpPct}%`;
+            }
+        }
+
+        // NEXT-GEN GLOWING REALISTIC KITE RENDERER
+        function drawRealisticKite(skin, w, h) {
+            ctx.save();
+            ctx.shadowColor = skin.primary;
+            ctx.shadowBlur = 20;
+            ctx.shadowOffsetY = 4;
+
+            if (skin.shape === 'diamond') {
+                ctx.fillStyle = skin.primary;
+                ctx.beginPath();
+                ctx.moveTo(0, -h/2);
+                ctx.lineTo(w/2, 0);
+                ctx.lineTo(0, h/2);
+                ctx.lineTo(-w/2, 0);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = skin.secondary;
+                ctx.beginPath();
+                ctx.moveTo(0, -h/2);
+                ctx.lineTo(w/2, 0);
+                ctx.lineTo(0, 0);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(0, -h/2); ctx.lineTo(0, h/2);
+                ctx.moveTo(-w/2, 0); ctx.lineTo(w/2, 0);
+                ctx.stroke();
+            } 
+            else if (skin.shape === 'dragon' || skin.shape === 'bird') {
+                ctx.fillStyle = skin.primary;
+                ctx.beginPath();
+                ctx.moveTo(0, -h/2);
+                ctx.lineTo(w/2 + 8, h/3);
+                ctx.lineTo(0, h/2);
+                ctx.lineTo(-w/2 - 8, h/3);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = skin.secondary;
+                ctx.beginPath();
+                ctx.moveTo(0, -h/2);
+                ctx.lineTo(0, h/2);
+                ctx.lineTo(w/2 + 8, h/3);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(0, -h/2); ctx.lineTo(0, h/2);
+                ctx.moveTo(-w/2 - 8, h/3); ctx.lineTo(w/2 + 8, h/3);
+                ctx.stroke();
+            }
+            else {
+                ctx.fillStyle = skin.primary;
+                ctx.beginPath();
+                ctx.roundRect(-w/2, -h/2, w, h, 12);
+                ctx.fill();
+
+                ctx.fillStyle = skin.secondary;
+                ctx.beginPath();
+                ctx.roundRect(-w/3, -h/3, (w/3)*2, (h/3)*2, 8);
+                ctx.fill();
+
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(-w/2, -h/2, w, h);
+            }
+
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowColor = '#ffffff';
+            ctx.shadowBlur = 12;
+            ctx.beginPath();
+            ctx.arc(0, -4, 4, 0, Math.PI*2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // NEXT-GEN GLOWING BOSS KITE RENDERER
+        function drawBossKite(boss) {
+            ctx.save();
+            ctx.shadowColor = boss.tier === 1 ? '#c084fc' : '#38bdf8';
+            ctx.shadowBlur = 30;
+            ctx.shadowOffsetY = 8;
+
+            let bw = boss.width;
+            let bh = boss.height;
+
+            ctx.fillStyle = boss.tier === 1 ? '#4c1d95' : '#0f172a';
+            ctx.strokeStyle = boss.tier === 1 ? '#e879f9' : '#38bdf8';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(0, -bh/2);
+            ctx.lineTo(bw/2 + 20, bh/3);
+            ctx.lineTo(0, bh/2);
+            ctx.lineTo(-bw/2 - 20, bh/3);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = boss.tier === 1 ? '#831843' : '#1e3a8a';
+            ctx.beginPath();
+            ctx.moveTo(0, -bh/2 + 10);
+            ctx.lineTo(0, bh/2 - 10);
+            ctx.lineTo(bw/3, bh/4);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(0, -bh/2); ctx.lineTo(0, bh/2);
+            ctx.moveTo(-bw/2 - 20, bh/3); ctx.lineTo(bw/2 + 20, bh/3);
+            ctx.stroke();
+
+            // Glowing Eyes
+            ctx.fillStyle = boss.tier === 1 ? '#f43f5e' : '#facc15';
+            ctx.shadowColor = boss.tier === 1 ? '#f43f5e' : '#facc15';
+            ctx.shadowBlur = 22;
+            ctx.beginPath();
+            ctx.arc(-30, -10, 10, 0, Math.PI*2);
+            ctx.arc(30, -10, 10, 0, Math.PI*2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            if (altitude < 2500) {
+                skyGrad.addColorStop(0, '#0ea5e9');
+                skyGrad.addColorStop(1, '#0369a1');
+            } else if (altitude < 6500) {
+                skyGrad.addColorStop(0, '#4f46e5');
+                skyGrad.addColorStop(1, '#1e1b4b');
+            } else {
+                skyGrad.addColorStop(0, '#0f172a');
+                skyGrad.addColorStop(1, '#020617');
+            }
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (altitude >= 3500) {
+                ctx.fillStyle = '#ffffff';
+                for (let i = 0; i < 30; i++) {
+                    let sx = (i * 53 + altitude * 0.15) % canvas.width;
+                    let sy = (i * 97) % canvas.height;
+                    ctx.fillRect(sx, sy, 1.8, 1.8);
+                }
+            }
+
+            // String with Neon Glow
+            ctx.save();
+            ctx.shadowColor = '#38bdf8';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, canvas.height + 20);
+            let ctrlX = (canvas.width / 2 + player.x) / 2 + (player.x - canvas.width / 2) * 0.35;
+            let ctrlY = (canvas.height + player.y) / 2;
+            ctx.quadraticCurveTo(ctrlX, ctrlY, player.x, player.y + player.height / 2);
+            ctx.strokeStyle = player.shield || player.boostTimer > 0 ? '#38bdf8' : 'rgba(255, 255, 255, 0.8)';
+            ctx.lineWidth = player.shield || player.boostTimer > 0 ? 4 : 2.5;
+            ctx.stroke();
+            ctx.restore();
+
+            for (let pt of particles) {
+                ctx.save();
+                ctx.shadowColor = pt.color;
+                ctx.shadowBlur = 8;
+                ctx.fillStyle = pt.color;
+                ctx.fillRect(pt.x, pt.y, pt.size, pt.size);
+                ctx.restore();
+            }
+
+            for (let pr of projectiles) {
+                ctx.save();
+                ctx.translate(pr.x, pr.y);
+                ctx.fillStyle = pr.color;
+                ctx.shadowColor = '#38bdf8';
+                ctx.shadowBlur = 18;
+                ctx.beginPath();
+                ctx.roundRect(-pr.width/2, -pr.height/2, pr.width, pr.height, 8);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Powerups with Glow
+            for (let p of powerups) {
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                if (p.type === 'coin') {
+                    ctx.rotate(p.spin);
+                    ctx.shadowColor = '#fbbf24';
+                    ctx.shadowBlur = 15;
+                    ctx.fillStyle = '#fbbf24';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 12, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#fef3c7';
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 12px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('★', 0, 0);
+                } else if (p.type === 'shield') {
+                    ctx.shadowColor = '#38bdf8';
+                    ctx.shadowBlur = 15;
+                    ctx.fillStyle = '#38bdf8';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 14, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                } else if (p.type === 'repair') {
+                    ctx.shadowColor = '#10b981';
+                    ctx.shadowBlur = 15;
+                    ctx.fillStyle = '#10b981';
+                    ctx.beginPath();
+                    ctx.roundRect(-12, -5, 24, 10, 4);
+                    ctx.roundRect(-5, -12, 10, 24, 4);
+                    ctx.fill();
+                } else if (p.type === 'magnet') {
+                    ctx.shadowColor = '#a855f7';
+                    ctx.shadowBlur = 15;
+                    ctx.fillStyle = '#a855f7';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 13, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 10px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('🧲', 0, 0);
+                } else if (p.type === 'boost') {
+                    ctx.shadowColor = '#38bdf8';
+                    ctx.shadowBlur = 15;
+                    ctx.fillStyle = '#38bdf8';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 13, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 10px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('⚡', 0, 0);
+                }
+                ctx.restore();
+            }
+
+            // REDESIGNED & ACCURATELY DEPICTED OBSTACLES
+            for (let ob of obstacles) {
+                ctx.save();
+                ctx.translate(ob.x, ob.y);
+                
+                if (ob.type === 'bird') {
+                    // Realistic Hawk / Bird Silhouette with Flapping Wings & Feathers
+                    ctx.shadowColor = '#cbd5e1';
+                    ctx.shadowBlur = 10;
+                    ctx.fillStyle = '#334155';
+                    ctx.strokeStyle = '#64748b';
+                    ctx.lineWidth = 2;
+                    
+                    // Body
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 16, 9, 0, 0, Math.PI*2);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Head & Beak
+                    ctx.fillStyle = '#1e293b';
+                    ctx.beginPath();
+                    ctx.arc(12, -2, 4, 0, Math.PI*2);
+                    ctx.fill();
+
+                    // Flapping Wings
+                    let wOff = Math.sin(ob.wingAnim) * 16;
+                    ctx.fillStyle = '#475569';
+                    ctx.beginPath();
+                    ctx.moveTo(-4, 0);
+                    ctx.lineTo(-26, wOff);
+                    ctx.lineTo(-12, 10);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo(4, 0);
+                    ctx.lineTo(26, wOff);
+                    ctx.lineTo(12, 10);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                } 
+                else if (ob.type === 'drone') {
+                    // Quadcopter Drone with Rotor Blades & Core Light
+                    ctx.shadowColor = '#06b6d4';
+                    ctx.shadowBlur = 14;
+                    ctx.fillStyle = '#0f172a';
+                    ctx.strokeStyle = '#38bdf8';
+                    ctx.lineWidth = 2.5;
+                    
+                    // Central frame
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 14, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Rotor arms & spinning blades
+                    ctx.strokeStyle = '#94a3b8';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(-16, -16); ctx.lineTo(16, 16);
+                    ctx.moveTo(16, -16); ctx.lineTo(-16, 16);
+                    ctx.stroke();
+
+                    // Red blinking sensor
+                    ctx.fillStyle = '#ef4444';
+                    ctx.shadowColor = '#ef4444';
+                    ctx.shadowBlur = 12;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                } 
+                else if (ob.type === 'lightning') {
+                    // Multi-Segment Electrical Lightning Bolt
+                    ctx.shadowColor = '#facc15';
+                    ctx.shadowBlur = 22;
+                    ctx.fillStyle = '#fef08a';
+                    ctx.strokeStyle = '#eab308';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(2, -42);
+                    ctx.lineTo(-16, 2);
+                    ctx.lineTo(6, 0);
+                    ctx.lineTo(-10, 42);
+                    ctx.lineTo(18, -4);
+                    ctx.lineTo(4, -4);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                } 
+                else if (ob.type === 'gust') {
+                    // Swirling Dynamic Air Current Lines
+                    ctx.shadowColor = '#38bdf8';
+                    ctx.shadowBlur = 14;
+                    ctx.strokeStyle = 'rgba(56, 189, 248, 0.95)';
+                    ctx.lineWidth = 4;
+                    ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    ctx.arc(0, -4, 16, Math.PI * 0.2, Math.PI * 1.8, false);
+                    ctx.moveTo(-12, 10);
+                    ctx.lineTo(16, 14);
+                    ctx.moveTo(2, 16);
+                    ctx.lineTo(12, 6);
+                    ctx.stroke();
+                } 
+                else if (ob.type === 'cloud') {
+                    // Layered Fluffy Cumulus Storm Cloud
+                    ctx.shadowColor = '#64748b';
+                    ctx.shadowBlur = 12;
+                    ctx.fillStyle = 'rgba(148, 163, 184, 0.88)';
+                    ctx.beginPath();
+                    ctx.arc(-18, 2, 22, 0, Math.PI*2);
+                    ctx.arc(18, -4, 24, 0, Math.PI*2);
+                    ctx.arc(0, 12, 20, 0, Math.PI*2);
+                    ctx.fill();
+                } 
+                else if (ob.type === 'asteroid') {
+                    // Textured Rock Fragment with Craters
+                    ctx.rotate(ob.spin);
+                    ctx.shadowColor = '#475569';
+                    ctx.shadowBlur = 10;
+                    ctx.fillStyle = '#334155';
+                    ctx.strokeStyle = '#94a3b8';
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    ctx.roundRect(-18, -18, 36, 36, 10);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Craters on asteroid
+                    ctx.fillStyle = '#1e293b';
+                    ctx.beginPath();
+                    ctx.arc(-6, -6, 5, 0, Math.PI*2);
+                    ctx.arc(6, 6, 4, 0, Math.PI*2);
+                    ctx.fill();
+                } 
+                else if (ob.type === 'boss_proj') {
+                    ctx.fillStyle = '#f43f5e';
+                    ctx.shadowColor = '#f43f5e';
+                    ctx.shadowBlur = 15;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 10, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+
+            // Boss Kite Render
+            if (boss) {
+                drawBossKite(boss);
+            }
+
+            // Player Kite Render
+            let activeSkin = KITE_SKINS.find(s => s.id === activeSkinId) || KITE_SKINS[0];
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            if (player.invincibleTimer % 4 < 2) {
+                drawRealisticKite(activeSkin, player.width, player.height);
+
+                if (player.shield || player.boostTimer > 0) {
+                    ctx.strokeStyle = '#38bdf8';
+                    ctx.lineWidth = 4;
+                    ctx.shadowColor = '#38bdf8';
+                    ctx.shadowBlur = 22;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, player.width * 0.85, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+            ctx.restore();
+        }
+
+        function gameOver() {
+            gameState = 'GAMEOVER';
+            if (altitude > highAltitude) {
+                highAltitude = altitude;
+                localStorage.setItem('kite_high_v8', highAltitude);
+            }
+            localStorage.setItem('kite_coins_v8', coins);
+
+            document.getElementById('go-altitude').innerText = `${altitude} m`;
+            document.getElementById('go-coins').innerText = sessionCoins;
+            document.getElementById('go-high').innerText = `${highAltitude} m`;
+            document.getElementById('boss-hud').classList.add('hidden');
+            document.getElementById('power-hud-btn').classList.add('hidden');
+            document.getElementById('gameover-screen').classList.remove('hidden');
+        }
+
+        function loop() {
+            update();
+            render();
+            requestAnimationFrame(loop);
+        }
+
+        document.getElementById('start-btn').addEventListener('click', startGame);
+        document.getElementById('restart-btn').addEventListener('click', startGame);
+        document.getElementById('top-newgame-btn').addEventListener('click', startGame);
+
+        document.getElementById('shop-btn').addEventListener('click', () => {
+            renderShopUI();
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('shop-screen').classList.remove('hidden');
+        });
+
+        document.getElementById('top-shop-btn').addEventListener('click', () => {
+            renderShopUI();
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('gameover-screen').classList.add('hidden');
+            document.getElementById('shop-screen').classList.remove('hidden');
+        });
+
+        document.getElementById('back-to-menu').addEventListener('click', () => {
+            document.getElementById('shop-screen').classList.add('hidden');
+            document.getElementById('menu-screen').classList.remove('hidden');
+        });
+
+        document.getElementById('menu-btn').addEventListener('click', () => {
+            document.getElementById('gameover-screen').classList.add('hidden');
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('menu-screen').classList.remove('hidden');
+            gameState = 'MENU';
+        });
+
+        document.getElementById('buy-string').addEventListener('click', () => {
+            let cost = 50 * (upgrades.stringLevel + 1);
+            if (upgrades.stringLevel < 3 && coins >= cost) {
+                coins -= cost;
+                upgrades.stringLevel++;
+                localStorage.setItem('kite_up_string_v8', upgrades.stringLevel);
+                localStorage.setItem('kite_coins_v8', coins);
+                renderShopUI();
+            }
+        });
+
+        document.getElementById('buy-speed').addEventListener('click', () => {
+            let cost = 75 * (upgrades.speedLevel + 1);
+            if (upgrades.speedLevel < 3 && coins >= cost) {
+                coins -= cost;
+                upgrades.speedLevel++;
+                localStorage.setItem('kite_up_speed_v8', upgrades.speedLevel);
+                localStorage.setItem('kite_coins_v8', coins);
+                renderShopUI();
+            }
+        });
+
+        resizeCanvas();
+        requestAnimationFrame(loop);
+    </script>
+</body>
+</html>
