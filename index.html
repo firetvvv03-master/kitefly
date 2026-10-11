@@ -50,8 +50,13 @@
             </div>
         </div>
 
+        <!-- Weather Condition Banner (Dynamic HUD) -->
+        <div id="weather-banner" class="absolute top-12 left-1/2 -translate-x-1/2 px-3 py-1 bg-slate-900/80 border border-sky-500/40 rounded-full text-[8px] arcade-font text-sky-300 z-20 pointer-events-none shadow-lg transition-all duration-300">
+            🌤️ CLEAR SKIES
+        </div>
+
         <!-- Top Menu Navigation Bar -->
-        <div class="absolute top-14 left-0 w-full px-4 flex justify-between items-center z-20 pointer-events-auto">
+        <div class="absolute top-20 left-0 w-full px-4 flex justify-between items-center z-20 pointer-events-auto">
             <button id="top-shop-btn" class="px-2.5 py-1 bg-slate-900/90 hover:bg-slate-800 text-amber-300 border border-amber-500/40 rounded-lg arcade-font text-[7px] shadow-lg transition active:scale-95">✨ SHOP</button>
             
             <!-- Restart Dropdown Container -->
@@ -68,7 +73,7 @@
         </div>
 
         <!-- Active Power-Up Timers HUD Display -->
-        <div id="power-timers-hud" class="absolute top-22 left-0 w-full px-4 flex flex-wrap justify-center gap-2 z-20 pointer-events-none">
+        <div id="power-timers-hud" class="absolute top-28 left-0 w-full px-4 flex flex-wrap justify-center gap-2 z-20 pointer-events-none">
             <div id="magnet-timer-container" class="hidden px-2 py-0.5 bg-purple-950/80 border border-purple-500/60 rounded-full text-[7px] arcade-font text-purple-300 animate-pulse">
                 🧲: <span id="magnet-time-left">0.0s</span>
             </div>
@@ -81,7 +86,7 @@
         </div>
 
         <!-- Boss Health Bar HUD (Appears during boss fights) -->
-        <div id="boss-hud" class="absolute top-32 left-0 w-full px-4 flex flex-col items-center z-20 hidden pointer-events-none">
+        <div id="boss-hud" class="absolute top-36 left-0 w-full px-4 flex flex-col items-center z-20 hidden pointer-events-none">
             <span id="boss-name" class="text-[9px] arcade-font text-rose-400 mb-1 animate-pulse">⚠️ BOSS ⚠️</span>
             <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-rose-500/60 shadow-lg">
                 <div id="boss-hp-bar" class="w-full h-full bg-gradient-to-r from-rose-600 via-amber-500 to-rose-500 transition-all duration-100"></div>
@@ -102,7 +107,7 @@
         <div id="menu-screen" class="absolute inset-0 bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center z-30 p-6 text-center">
             <div class="mb-3 px-3 py-1 bg-sky-500/10 border border-sky-500/30 rounded-full text-sky-400 arcade-font text-[8px] tracking-widest uppercase animate-pulse">Boss Attack Edition</div>
             <h1 class="text-3xl md:text-4xl font-extrabold arcade-font text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-pink-400 to-amber-300 mb-2 glow-text">KITE ASCENT</h1>
-            <p class="text-xs text-slate-400 mb-6 max-w-[260px]">Fight aggressive bosses every 10 levels, dodge high-speed hazards, and collect new skills!</p>
+            <p class="text-xs text-slate-400 mb-6 max-w-[260px]">Fight aggressive bosses every 10 levels, dodge hazards, and collect new skills!</p>
             
             <div class="flex flex-col gap-3 w-full max-w-xs">
                 <button id="start-btn" class="w-full py-4 bg-gradient-to-r from-pink-500 via-indigo-600 to-sky-500 hover:opacity-90 text-white font-bold arcade-font text-xs rounded-2xl shadow-xl transform transition active:scale-95 border-b-4 border-indigo-900">LAUNCH KITE</button>
@@ -112,7 +117,7 @@
             </div>
         </div>
 
-        <!-- Shop & Hangar Overlay -->
+        <!-- Shop & Hangar Overlay with Tab Navigation -->
         <div id="shop-screen" class="absolute inset-0 bg-slate-950/98 backdrop-blur-2xl flex flex-col items-center justify-between z-30 p-6 hidden">
             <div class="w-full max-w-xs flex justify-between items-center mt-2">
                 <h2 class="text-base font-black arcade-font text-pink-400">KITE WARDROBE</h2>
@@ -122,50 +127,69 @@
                 </div>
             </div>
 
+            <!-- Tab Buttons Header -->
+            <div class="w-full max-w-xs grid grid-cols-4 gap-1 mt-2">
+                <button id="tab-btn-kites" class="py-2 bg-pink-600 text-white font-bold arcade-font text-[7px] rounded-lg shadow transition active:scale-95">KITES</button>
+                <button id="tab-btn-ropes" class="py-2 bg-slate-900 hover:bg-slate-800 text-sky-300 border border-sky-500/30 font-bold arcade-font text-[7px] rounded-lg shadow transition active:scale-95">ROPES</button>
+                <button id="tab-btn-tails" class="py-2 bg-slate-900 hover:bg-slate-800 text-amber-300 border border-amber-500/30 font-bold arcade-font text-[7px] rounded-lg shadow transition active:scale-95">TAILS</button>
+                <button id="tab-btn-upgrades" class="py-2 bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30 font-bold arcade-font text-[7px] rounded-lg shadow transition active:scale-95">GEAR</button>
+            </div>
+
+            <!-- Tab Content View Container -->
             <div class="w-full max-w-xs flex-1 my-3 overflow-y-auto pr-1 flex flex-col gap-3">
-                <div class="text-[10px] font-bold text-slate-300 tracking-wider">CHOOSE KITE MODEL</div>
-                <div id="skin-grid" class="grid grid-cols-2 gap-2.5"></div>
-
-                <div class="text-[10px] font-bold text-slate-300 tracking-wider mt-1">CHOOSE KITE ROPE SKIN</div>
-                <div id="rope-grid" class="grid grid-cols-2 gap-2.5"></div>
-
-                <div class="text-[10px] font-bold text-slate-300 tracking-wider mt-1">CHOOSE WINGTIP TAIL SKIN</div>
-                <div id="tail-grid" class="grid grid-cols-2 gap-2.5"></div>
-
-                <div class="text-[10px] font-bold text-slate-300 tracking-wider mt-2">UPGRADES</div>
-                <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
-                    <div>
-                        <div class="text-xs font-bold text-white">Reinforced Line</div>
-                        <div class="text-[9px] text-slate-400" id="desc-string">+25 Max HP</div>
+                <div id="tab-content-kites" class="grid grid-cols-2 gap-2.5"></div>
+                <div id="tab-content-ropes" class="grid grid-cols-2 gap-2.5 hidden"></div>
+                <div id="tab-content-tails" class="grid grid-cols-2 gap-2.5 hidden"></div>
+                <div id="tab-content-upgrades" class="flex flex-col gap-3 hidden">
+                    <div class="text-[10px] font-bold text-slate-300 tracking-wider">PERFORMANCE UPGRADES</div>
+                    <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-white">Reinforced Line</div>
+                            <div class="text-[9px] text-slate-400" id="desc-string">+50 Max HP</div>
+                        </div>
+                        <button id="buy-string" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold arcade-font text-[8px] rounded-xl shadow">50s</button>
                     </div>
-                    <button id="buy-string" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold arcade-font text-[8px] rounded-xl shadow">50s</button>
-                </div>
-                <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
-                    <div>
-                        <div class="text-xs font-bold text-white">Aerodynamic Frame</div>
-                        <div class="text-[9px] text-slate-400" id="desc-speed">+Agility Speed</div>
+                    <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-white">Aerodynamic Frame</div>
+                            <div class="text-[9px] text-slate-400" id="desc-speed">+Agility Speed</div>
+                        </div>
+                        <button id="buy-speed" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold arcade-font text-[8px] rounded-xl shadow">75s</button>
                     </div>
-                    <button id="buy-speed" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold arcade-font text-[8px] rounded-xl shadow">75s</button>
                 </div>
             </div>
 
             <button id="back-to-menu" class="w-full max-w-xs py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold arcade-font text-xs rounded-2xl shadow border border-slate-700">BACK</button>
         </div>
 
+        <!-- Ad Overlay Simulation -->
+        <div id="ad-screen" class="absolute inset-0 bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center z-40 p-6 text-center hidden">
+            <div class="text-xs arcade-font text-sky-400 mb-2 animate-pulse">📺 SPONSORED ADVERTISEMENT</div>
+            <div class="w-64 h-36 bg-slate-900 border-2 border-sky-500/50 rounded-xl flex flex-col items-center justify-center mb-6 shadow-2xl">
+                <span class="text-2xl mb-2">🚀</span>
+                <span class="text-xs font-bold text-white">Kite Ascent Pro Arcade</span>
+                <span id="ad-timer" class="text-[10px] text-amber-300 mt-2 arcade-font">Ad playing... 3s</span>
+            </div>
+            <p class="text-[10px] text-slate-400 max-w-[240px]">Watch this short message to fully repair your kite and resume flight!</p>
+        </div>
+
         <!-- Game Over Overlay -->
         <div id="gameover-screen" class="absolute inset-0 bg-slate-950/90 backdrop-blur-xl flex flex-col items-center justify-center z-30 p-6 text-center hidden">
             <h2 class="text-2xl font-black arcade-font text-rose-500 mb-1">FLIGHT ENDED</h2>
-            <p class="text-xs text-slate-400 mb-6">Your high-altitude journey concluded.</p>
+            <p class="text-xs text-slate-400 mb-4">Your high-altitude journey concluded.</p>
 
-            <div class="bg-slate-900/90 border border-slate-800/80 p-4 rounded-2xl mb-6 w-full max-w-xs flex flex-col gap-2.5 shadow-xl">
+            <div class="bg-slate-900/90 border border-slate-800/80 p-3 rounded-2xl mb-4 w-full max-w-xs flex flex-col gap-2 shadow-xl">
                 <div class="flex justify-between text-xs"><span class="text-slate-400">Altitude Reached:</span><span id="go-altitude" class="font-bold text-white arcade-font text-[10px]">0 m</span></div>
                 <div class="flex justify-between text-xs"><span class="text-slate-400">Stars Collected:</span><span id="go-coins" class="font-bold text-amber-300 arcade-font text-[10px]">0</span></div>
                 <div class="flex justify-between text-xs"><span class="text-slate-400">Personal Best:</span><span id="go-high" class="font-bold text-sky-400 arcade-font text-[10px]">0 m</span></div>
             </div>
 
-            <div class="flex flex-col gap-3 w-full max-w-xs">
-                <button id="restart-btn" class="w-full py-4 bg-gradient-to-r from-pink-500 to-indigo-600 hover:opacity-90 text-white font-bold arcade-font text-xs rounded-2xl shadow-lg border-b-4 border-indigo-900">FLY AGAIN</button>
-                <button id="menu-btn" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold arcade-font text-xs rounded-2xl shadow border border-slate-700">MAIN MENU</button>
+            <div class="flex flex-col gap-2.5 w-full max-w-xs">
+                <button id="watch-ad-btn" class="w-full py-3.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:opacity-90 text-slate-950 font-black arcade-font text-[9px] rounded-2xl shadow-lg border-b-4 border-amber-800 flex items-center justify-center gap-1.5 animate-pulse">
+                    📺 WATCH AD TO RECOVER FULL HP
+                </button>
+                <button id="restart-btn" class="w-full py-3.5 bg-gradient-to-r from-pink-500 to-indigo-600 hover:opacity-90 text-white font-bold arcade-font text-xs rounded-2xl shadow-lg border-b-4 border-indigo-900">FLY AGAIN</button>
+                <button id="menu-btn" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold arcade-font text-xs rounded-2xl shadow border border-slate-700">MAIN MENU</button>
             </div>
         </div>
 
@@ -208,21 +232,70 @@
             { id: 'dragon', name: 'Magical Dragon', shape: 'dragon', primary: '#10b981', secondary: '#047857', tailColor: '#34d399' },
             { id: 'shark', name: 'Ocean Shark', shape: 'shark', primary: '#3b82f6', secondary: '#1e3a8a', tailColor: '#60a5fa' },
             { id: 'racecar', name: 'Racing Racecar', shape: 'racecar', primary: '#ef4444', secondary: '#facc15', tailColor: '#f87171' },
-            { id: 'soccer', name: 'Soccer Star', shape: 'soccer', primary: '#ffffff', secondary: '#0f172a', tailColor: '#e2e8f0' }
+            { id: 'soccer', name: 'Soccer Star', shape: 'soccer', primary: '#ffffff', secondary: '#0f172a', tailColor: '#e2e8f0' },
+            { id: 'bunny', name: 'Bunny Hop', shape: 'bunny', primary: '#f472b6', secondary: '#ffffff', tailColor: '#f472b6' },
+            { id: 'kitty', name: 'Kitty Meow', shape: 'kitty', primary: '#fb923c', secondary: '#fef08a', tailColor: '#fb923c' },
+            { id: 'teddy', name: 'Teddy Bear', shape: 'teddy', primary: '#b45309', secondary: '#fde68a', tailColor: '#b45309' },
+            { id: 'unicorn', name: 'Rainbow Unicorn', shape: 'unicorn', primary: '#e879f9', secondary: '#fdf4ff', tailColor: '#f472b6' },
+            { id: 'chick', name: 'Peeping Chick', shape: 'chick', primary: '#fde047', secondary: '#ffffff', tailColor: '#facc15' },
+            { id: 'penguin', name: 'Chubby Penguin', shape: 'penguin', primary: '#334155', secondary: '#ffffff', tailColor: '#38bdf8' },
+            { id: 'fox', name: 'Clever Little Fox', shape: 'fox', primary: '#ea580c', secondary: '#ffedd5', tailColor: '#fb923c' },
+            { id: 'frog', name: 'Happy Froggy', shape: 'frog', primary: '#22c55e', secondary: '#dcfce7', tailColor: '#4ade80' },
+            { id: 'owl', name: 'Wise Little Owl', shape: 'owl', primary: '#78350f', secondary: '#fef3c7', tailColor: '#d97706' },
+            { id: 'koala', name: 'Sleepy Koala', shape: 'koala', primary: '#94a3b8', secondary: '#f1f5f9', tailColor: '#64748b' },
+            { id: 'hamster', name: 'Squeaky Hamster', shape: 'hamster', primary: '#d97706', secondary: '#fef3c7', tailColor: '#f59e0b' },
+            { id: 'cupcake', name: 'Sweet Cupcake', shape: 'cupcake', primary: '#ec4899', secondary: '#fbcfe8', tailColor: '#f43f5e' },
+            { id: 'starfish', name: 'Shiny Starfish', shape: 'starfish', primary: '#fb7185', secondary: '#ffe4e6', tailColor: '#fb923c' },
+            { id: 'strawberry', name: 'Sweet Strawberry', shape: 'strawberry', primary: '#f43f5e', secondary: '#22c55e', tailColor: '#f43f5e' },
+            { id: 'bubblebee', name: 'Buzzy Bumblebee', shape: 'bubblebee', primary: '#eab308', secondary: '#1e293b', tailColor: '#facc15' },
+            { id: 'dinosaur', name: 'Mini Dino Rex', shape: 'dinosaur', primary: '#10b981', secondary: '#6ee7b7', tailColor: '#34d399' },
+            { id: 'ghostie', name: 'Friendly Ghostie', shape: 'ghostie', primary: '#f8fafc', secondary: '#94a3b8', tailColor: '#e2e8f0' },
+            { id: 'axolotl', name: 'Bubble Axolotl', shape: 'axolotl', primary: '#f472b6', secondary: '#fda4af', tailColor: '#fbcfe8' },
+            { id: 'jellyfish', name: 'Neon Jellyfish', shape: 'jellyfish', primary: '#c084fc', secondary: '#38bdf8', tailColor: '#a855f7' },
+            { id: 'sunflower', name: 'Sunny Sunflower', shape: 'sunflower', primary: '#f59e0b', secondary: '#78350f', tailColor: '#fbbf24' },
+            { id: 'mushroom', name: 'Magic Mushroom', shape: 'mushroom', primary: '#ef4444', secondary: '#ffffff', tailColor: '#f87171' },
+            { id: 'cupidsheart', name: 'Cupid Heart', shape: 'cupidsheart', primary: '#fb7185', secondary: '#ffe4e6', tailColor: '#f43f5e' },
+            { id: 'cottoncloud', name: 'Cotton Cloud', shape: 'cottoncloud', primary: '#e0f2fe', secondary: '#bae6fd', tailColor: '#7dd3fc' }
         ];
 
         const ROPE_SKINS = [
-            { id: 'classic', name: 'Standard String', color: 'rgba(255, 255, 255, 0.8)', width: 2.5, glow: false },
-            { id: 'neoncyan', name: 'Neon Cyan Beam', color: '#00f3ff', width: 3.5, glow: true },
-            { id: 'goldenspark', name: 'Golden Filament', color: '#facc15', width: 3.5, glow: true },
-            { id: 'plasma', name: 'Plasma Violet', color: '#c084fc', width: 4.0, glow: true }
+            { id: 'classic', name: 'Standard String', color: 'rgba(255, 255, 255, 0.9)', width: 3.0, glow: false },
+            { id: 'neoncyan', name: 'Neon Cyan Beam', color: '#00f3ff', width: 4.0, glow: true },
+            { id: 'goldenspark', name: 'Golden Filament', color: '#facc15', width: 4.0, glow: true },
+            { id: 'plasma', name: 'Plasma Violet', color: '#c084fc', width: 4.5, glow: true },
+            { id: 'rainbow', name: 'Rainbow Gradient', color: '#ec4899', width: 4.5, glow: true },
+            { id: 'starry', name: 'Starry Night', color: '#38bdf8', width: 4.0, glow: true },
+            { id: 'bubblegum', name: 'Bubblegum Pink', color: '#f472b6', width: 4.0, glow: true },
+            { id: 'mintcandy', name: 'Mint Swirl', color: '#6ee7b7', width: 4.0, glow: true },
+            { id: 'cottoncandy', name: 'Cotton Candy', color: '#fbcfe8', width: 4.0, glow: true },
+            { id: 'honeydew', name: 'Honeydew Glow', color: '#bef264', width: 4.0, glow: true },
+            { id: 'lavender', name: 'Lavender Mist', color: '#ddd6fe', width: 4.0, glow: true },
+            { id: 'peachy', name: 'Peachy Ribbon', color: '#fed7aa', width: 4.0, glow: true },
+            { id: 'starlight', name: 'Starlight Thread', color: '#fef08a', width: 4.5, glow: true },
+            { id: 'cherry', name: 'Cherry Blossom', color: '#fda4af', width: 4.0, glow: true },
+            { id: 'electric', name: 'Electric Lime', color: '#84cc16', width: 4.0, glow: true },
+            { id: 'aquamarine', name: 'Aquamarine Wave', color: '#2dd4bf', width: 4.0, glow: true },
+            { id: 'ruby', name: 'Ruby Sparkle', color: '#fb7185', width: 4.0, glow: true }
         ];
 
         const TAIL_SKINS = [
             { id: 'classicbow', name: 'Classic Bows', color: '#ec4899', style: 'bows' },
             { id: 'neonribbon', name: 'Neon Ribbons', color: '#00f3ff', style: 'ribbon' },
             { id: 'sparkletrail', name: 'Sparkle Streamer', color: '#facc15', style: 'sparkle' },
-            { id: 'flamestream', name: 'Flame Trail', color: '#f97316', style: 'flame' }
+            { id: 'flamestream', name: 'Flame Trail', color: '#f97316', style: 'flame' },
+            { id: 'butterfly', name: 'Fluttering Butterfly', color: '#a855f7', style: 'butterfly' },
+            { id: 'heartstream', name: 'Heart Streamer', color: '#f43f5e', style: 'heart' },
+            { id: 'stardust', name: 'Star Dust Tail', color: '#facc15', style: 'star' },
+            { id: 'cloudtail', name: 'Fluffy Cloud', color: '#e2e8f0', style: 'bows' },
+            { id: 'flowertail', name: 'Daisy Chain', color: '#fde047', style: 'star' },
+            { id: 'candytail', name: 'Candy Swirl', color: '#f472b6', style: 'bows' },
+            { id: 'bubbletail', name: 'Soap Bubbles', color: '#38bdf8', style: 'sparkle' },
+            { id: 'moonlit', name: 'Moon Crescent', color: '#fef08a', style: 'star' },
+            { id: 'cupcaketail', name: 'Sprinkle Stream', color: '#fb7185', style: 'sparkle' },
+            { id: 'feather', name: 'Angel Feather', color: '#e0f2fe', style: 'butterfly' },
+            { id: 'honeycomb', name: 'Honey Stream', color: '#f59e0b', style: 'star' },
+            { id: 'berry', name: 'Wild Berry', color: '#e11d48', style: 'heart' },
+            { id: 'glimmer', name: 'Glimmer Dust', color: '#c084fc', style: 'sparkle' }
         ];
 
         const BOSS_ROSTER = [
@@ -231,23 +304,36 @@
             { name: "LVL 30 BOSS: NEON-PIRATE CRUISER", color: '#eab308', maxHp: 380 },
             { name: "LVL 40 BOSS: QUANTUM-VOID OVERLORD", color: '#06b6d4', maxHp: 500 },
             { name: "LVL 50 BOSS: PLASMA-PHANTOM TITAN", color: '#10b981', maxHp: 650 },
-            { name: "LVL 60 BOSS: SUPERNOVA-CORE APEX", color: '#f97316', maxHp: 850 }
+            { name: "LVL 60 BOSS: SUPERNOVA-CORE APEX", color: '#f97316', maxHp: 850 },
+            { name: "LVL 70 BOSS: SOLAR-FLARE DREADNOUGHT", color: '#ef4444', maxHp: 1050 },
+            { name: "LVL 80 BOSS: VOID-GARGANTUA LEVIATHAN", color: '#8b5cf6', maxHp: 1300 },
+            { name: "LVL 90 BOSS: ECLIPSE-SPECTRE SOVEREIGN", color: '#38bdf8', maxHp: 1600 },
+            { name: "LVL 100 BOSS: ETERNITY-SINGULARITY ALPHA", color: '#fbbf24', maxHp: 2000 }
+        ];
+
+        const WEATHER_TYPES = [
+            { id: 'clear', name: "🌤️ CLEAR SKIES", tint: null },
+            { id: 'electric', name: "⚡ ELECTRIC STORM", tint: 'rgba(56, 189, 248, 0.08)' },
+            { id: 'blizzard', name: "🌪️ HIGH WIND BLIZZARD", tint: 'rgba(255, 255, 255, 0.06)' },
+            { id: 'rain', name: "🌧️ HEAVY RAINSTORM", tint: 'rgba(30, 58, 138, 0.12)' },
+            { id: 'snow', name: "❄️ SNOW STORM", tint: 'rgba(224, 242, 254, 0.08)' }
         ];
 
         const NEON_COLORS = ['#00f3ff', '#ff00ff', '#39ff14', '#ffb300', '#b026ff', '#ff073a', '#38bdf8', '#f43f5e'];
         const SPACE_SYMBOLS = ['☄️', '🌠', '🪐', '🚀', '🛸', '🛰️', '💫', '🌕', '👾', '🌀', '💎', '🔮', '💥', '⚡', '💀', '🔥', '☢️', '⚙️'];
 
         class DashFallingHazard {
-            constructor() {
+            constructor(hazardMult = 1.0) {
                 this.char = SPACE_SYMBOLS[Math.floor(Math.random() * SPACE_SYMBOLS.length)];
                 this.color = NEON_COLORS[Math.floor(Math.random() * NEON_COLORS.length)];
                 
-                let isFastHeavy = Math.random() < 0.35;
-                this.size = isFastHeavy ? Math.floor(Math.random() * 22) + 48 : Math.floor(Math.random() * 18) + 26;
+                let levelScalingFactor = Math.min(1.0, 0.6 + (altitude / 5000));
+                let isFastHeavy = Math.random() < (0.35 * levelScalingFactor);
+                this.size = isFastHeavy ? (Math.floor(Math.random() * 20) + 40) * levelScalingFactor : (Math.floor(Math.random() * 14) + 20);
                 this.x = Math.random() * (canvas.width - 60) + 30;
                 this.y = -60;
-                this.vx = (Math.random() - 0.5) * (isFastHeavy ? 3.5 : 2.0);
-                this.vy = isFastHeavy ? Math.random() * 4.5 + 6.0 : Math.random() * 3.0 + 2.2;
+                this.vx = (Math.random() - 0.5) * (isFastHeavy ? 3.0 : 1.5);
+                this.vy = (isFastHeavy ? Math.random() * 4.0 + 5.0 : Math.random() * 2.2 + 1.8) * Math.max(0.75, levelScalingFactor) * hazardMult;
                 this.rotation = 0;
                 this.rotSpeed = (Math.random() - 0.5) * 0.2;
             }
@@ -265,8 +351,11 @@
                 ctx.font = `${this.size}px sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.shadowColor = this.color;
-                ctx.shadowBlur = 24;
+                ctx.shadowColor = '#000000';
+                ctx.shadowBlur = 18;
+                ctx.lineWidth = 6;
+                ctx.strokeStyle = '#020617';
+                ctx.strokeText(this.char, 0, 0);
                 ctx.fillText(this.char, 0, 0);
                 ctx.restore();
             }
@@ -279,32 +368,41 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        let gameState = 'MENU'; // 'MENU', 'PLAYING', 'PAUSED', 'GAMEOVER'
+        let gameState = 'MENU';
         let altitude = 0;
         let level = 1;
-        let highAltitude = parseInt(localStorage.getItem('kite_high_v17') || '0');
-        let coins = parseInt(localStorage.getItem('kite_coins_v17') || '40');
+        let highAltitude = parseInt(localStorage.getItem('kite_high_v24') || '0');
+        let coins = parseInt(localStorage.getItem('kite_coins_v24') || '40');
         let sessionCoins = 0;
         let bossVerticalSpeedBonus = 0;
+
+        let currentWeather = WEATHER_TYPES[0];
+        let weatherTimer = 0;
+        let weatherEventTimer = 0;
+        let lightningFlashTimer = 0;
+        let freezeTimer = 0;
+
+        let adAvailable = true;
+        let currentShopTab = 'kites';
 
         let activeBoss = null;
         let bossAttackTimer = 0;
         let bossProjectiles = [];
 
-        let activeSkinId = localStorage.getItem('kite_active_skin_v17') || 'dalmatian';
-        let activeRopeId = localStorage.getItem('kite_active_rope_v17') || 'classic';
-        let activeTailId = localStorage.getItem('kite_active_tail_v17') || 'classicbow';
+        let activeSkinId = localStorage.getItem('kite_active_skin_v24') || 'dalmatian';
+        let activeRopeId = localStorage.getItem('kite_active_rope_v24') || 'classic';
+        let activeTailId = localStorage.getItem('kite_active_tail_v24') || 'classicbow';
 
         let player = {
-            x: 0, y: 0, width: 64, height: 68,
-            vx: 0, targetX: 0, maxHp: 100, hp: 100,
+            x: 0, y: 0, targetX: 0, targetY: 0, width: 64, height: 68,
+            vx: 0, maxHp: 150, hp: 150,
             speed: 6.0, shield: false, magnetTimer: 0, vortexTimer: 0, laserTimer: 0,
             powerCooldown: 0, invincibleTimer: 0
         };
 
         let upgrades = {
-            stringLevel: parseInt(localStorage.getItem('kite_up_string_v17') || '0'),
-            speedLevel: parseInt(localStorage.getItem('kite_up_speed_v17') || '0')
+            stringLevel: parseInt(localStorage.getItem('kite_up_string_v24') || '0'),
+            speedLevel: parseInt(localStorage.getItem('kite_up_speed_v24') || '0')
         };
 
         let particles = [];
@@ -315,8 +413,9 @@
         let dashHazardTimer = 0;
         let distanceTraveled = 0;
 
-        let keys = { ArrowLeft: false, ArrowRight: false, KeyA: false, KeyD: false, Space: false };
+        let keys = { ArrowLeft: false, ArrowRight: false, ArrowUp: false, ArrowDown: false, KeyA: false, KeyD: false, KeyW: false, KeyS: false, Space: false };
         let pointerX = null;
+        let pointerY = null;
 
         function resizeCanvas() {
             const container = canvas.parentElement;
@@ -324,141 +423,164 @@
             canvas.height = container.clientHeight;
             if (gameState === 'MENU') {
                 player.x = canvas.width / 2;
-                player.y = canvas.height - 150;
+                player.y = canvas.height * 0.75;
             }
         }
         window.addEventListener('resize', resizeCanvas);
 
         function saveSkins() {
-            localStorage.setItem('kite_active_skin_v17', activeSkinId);
-            localStorage.setItem('kite_active_rope_v17', activeRopeId);
-            localStorage.setItem('kite_active_tail_v17', activeTailId);
-            localStorage.setItem('kite_coins_v17', coins);
+            localStorage.setItem('kite_active_skin_v24', activeSkinId);
+            localStorage.setItem('kite_active_rope_v24', activeRopeId);
+            localStorage.setItem('kite_active_tail_v24', activeTailId);
+            localStorage.setItem('kite_coins_v24', coins);
         }
 
         function drawShopKiteThumbnail(tCtx, skin, w, h) {
             tCtx.clearRect(0, 0, w, h);
             tCtx.save();
             tCtx.translate(w / 2, h / 2 - 2);
-            drawRealisticKite(skin, 46, 48, tCtx);
+            drawRealisticKite(skin, 46, 48, 0, false, tCtx);
             tCtx.restore();
         }
+
+        function switchShopTab(tabName) {
+            currentShopTab = tabName;
+            ['kites', 'ropes', 'tails', 'upgrades'].forEach(t => {
+                let btn = document.getElementById(`tab-btn-${t}`);
+                let content = document.getElementById(`tab-content-${t}`);
+                if (t === tabName) {
+                    btn.className = `py-2 bg-pink-600 text-white font-bold arcade-font text-[7px] rounded-lg shadow transition active:scale-95`;
+                    content.classList.remove('hidden');
+                } else {
+                    btn.className = `py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700/50 font-bold arcade-font text-[7px] rounded-lg shadow transition active:scale-95`;
+                    content.classList.add('hidden');
+                }
+            });
+            renderShopUI();
+        }
+
+        document.getElementById('tab-btn-kites').addEventListener('click', () => switchShopTab('kites'));
+        document.getElementById('tab-btn-ropes').addEventListener('click', () => switchShopTab('ropes'));
+        document.getElementById('tab-btn-tails').addEventListener('click', () => switchShopTab('tails'));
+        document.getElementById('tab-btn-upgrades').addEventListener('click', () => switchShopTab('upgrades'));
 
         function renderShopUI() {
             document.getElementById('shop-coins').innerText = coins;
             document.getElementById('hud-coins').innerText = coins;
 
-            let grid = document.getElementById('skin-grid');
-            grid.innerHTML = '';
+            if (currentShopTab === 'kites') {
+                let grid = document.getElementById('tab-content-kites');
+                grid.innerHTML = '';
 
-            KITE_SKINS.forEach(skin => {
-                let isEquipped = activeSkinId === skin.id;
-                let card = document.createElement('div');
-                card.className = `p-2.5 rounded-2xl border flex flex-col items-center justify-between gap-1.5 transition cursor-pointer ${isEquipped ? 'bg-pink-500/20 border-pink-400' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'}`;
-                
-                let canvasThumb = document.createElement('canvas');
-                canvasThumb.width = 60; canvasThumb.height = 60;
-                let tCtx = canvasThumb.getContext('2d');
-                drawShopKiteThumbnail(tCtx, skin, 60, 60);
+                KITE_SKINS.forEach(skin => {
+                    let isEquipped = activeSkinId === skin.id;
+                    let card = document.createElement('div');
+                    card.className = `p-2.5 rounded-2xl border flex flex-col items-center justify-between gap-1.5 transition cursor-pointer ${isEquipped ? 'bg-pink-500/20 border-pink-400' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'}`;
+                    
+                    let canvasThumb = document.createElement('canvas');
+                    canvasThumb.width = 60; canvasThumb.height = 60;
+                    let tCtx = canvasThumb.getContext('2d');
+                    drawShopKiteThumbnail(tCtx, skin, 60, 60);
 
-                card.appendChild(canvasThumb);
-                
-                let infoDiv = document.createElement('div');
-                infoDiv.className = 'text-center';
-                infoDiv.innerHTML = `
-                    <div class="text-[9px] font-bold text-white truncate max-w-[110px]">${skin.name}</div>
-                    <div class="text-[7px] text-pink-400 font-bold">${isEquipped ? 'EQUIPPED' : 'SELECT'}</div>
-                `;
-                card.appendChild(infoDiv);
+                    card.appendChild(canvasThumb);
+                    
+                    let infoDiv = document.createElement('div');
+                    infoDiv.className = 'text-center';
+                    infoDiv.innerHTML = `
+                        <div class="text-[9px] font-bold text-white truncate max-w-[110px]">${skin.name}</div>
+                        <div class="text-[7px] text-pink-400 font-bold">${isEquipped ? 'EQUIPPED' : 'SELECT'}</div>
+                    `;
+                    card.appendChild(infoDiv);
 
-                card.onclick = () => {
-                    activeSkinId = skin.id;
-                    saveSkins();
-                    renderShopUI();
-                };
-                grid.appendChild(card);
-            });
+                    card.onclick = () => {
+                        activeSkinId = skin.id;
+                        saveSkins();
+                        renderShopUI();
+                    };
+                    grid.appendChild(card);
+                });
+            } else if (currentShopTab === 'ropes') {
+                let ropeGrid = document.getElementById('tab-content-ropes');
+                ropeGrid.innerHTML = '';
 
-            let ropeGrid = document.getElementById('rope-grid');
-            ropeGrid.innerHTML = '';
+                ROPE_SKINS.forEach(rope => {
+                    let isEquipped = activeRopeId === rope.id;
+                    let card = document.createElement('div');
+                    card.className = `p-2.5 rounded-2xl border flex flex-col items-center justify-between gap-1.5 transition cursor-pointer ${isEquipped ? 'bg-sky-500/20 border-sky-400' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'}`;
+                    
+                    let rCanvas = document.createElement('canvas');
+                    rCanvas.width = 60; rCanvas.height = 40;
+                    let rCtx = rCanvas.getContext('2d');
+                    rCtx.save();
+                    if (rope.glow) {
+                        rCtx.shadowColor = rope.color;
+                        rCtx.shadowBlur = 12;
+                    }
+                    rCtx.strokeStyle = rope.color;
+                    rCtx.lineWidth = rope.width;
+                    rCtx.beginPath();
+                    rCtx.moveTo(10, 35);
+                    rCtx.quadraticCurveTo(30, 10, 50, 35);
+                    rCtx.stroke();
+                    rCtx.restore();
 
-            ROPE_SKINS.forEach(rope => {
-                let isEquipped = activeRopeId === rope.id;
-                let card = document.createElement('div');
-                card.className = `p-2.5 rounded-2xl border flex flex-col items-center justify-between gap-1.5 transition cursor-pointer ${isEquipped ? 'bg-sky-500/20 border-sky-400' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'}`;
-                
-                let rCanvas = document.createElement('canvas');
-                rCanvas.width = 60; rCanvas.height = 40;
-                let rCtx = rCanvas.getContext('2d');
-                rCtx.save();
-                if (rope.glow) {
-                    rCtx.shadowColor = rope.color;
-                    rCtx.shadowBlur = 12;
-                }
-                rCtx.strokeStyle = rope.color;
-                rCtx.lineWidth = rope.width;
-                rCtx.beginPath();
-                rCtx.moveTo(10, 35);
-                rCtx.quadraticCurveTo(30, 10, 50, 35);
-                rCtx.stroke();
-                rCtx.restore();
+                    card.appendChild(rCanvas);
 
-                card.appendChild(rCanvas);
+                    let infoDiv = document.createElement('div');
+                    infoDiv.className = 'text-center';
+                    infoDiv.innerHTML = `
+                        <div class="text-[9px] font-bold text-white truncate max-w-[110px]">${rope.name}</div>
+                        <div class="text-[7px] text-sky-400 font-bold">${isEquipped ? 'EQUIPPED' : 'SELECT'}</div>
+                    `;
+                    card.appendChild(infoDiv);
 
-                let infoDiv = document.createElement('div');
-                infoDiv.className = 'text-center';
-                infoDiv.innerHTML = `
-                    <div class="text-[9px] font-bold text-white truncate max-w-[110px]">${rope.name}</div>
-                    <div class="text-[7px] text-sky-400 font-bold">${isEquipped ? 'EQUIPPED' : 'SELECT'}</div>
-                `;
-                card.appendChild(infoDiv);
+                    card.onclick = () => {
+                        activeRopeId = rope.id;
+                        saveSkins();
+                        renderShopUI();
+                    };
+                    ropeGrid.appendChild(card);
+                });
+            } else if (currentShopTab === 'tails') {
+                let tailGrid = document.getElementById('tab-content-tails');
+                tailGrid.innerHTML = '';
 
-                card.onclick = () => {
-                    activeRopeId = rope.id;
-                    saveSkins();
-                    renderShopUI();
-                };
-                ropeGrid.appendChild(card);
-            });
+                TAIL_SKINS.forEach(tail => {
+                    let isEquipped = activeTailId === tail.id;
+                    let card = document.createElement('div');
+                    card.className = `p-2.5 rounded-2xl border flex flex-col items-center justify-between gap-1.5 transition cursor-pointer ${isEquipped ? 'bg-amber-500/20 border-amber-400' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'}`;
+                    
+                    let tCanvas = document.createElement('canvas');
+                    tCanvas.width = 60; tCanvas.height = 40;
+                    let tCtx = tCanvas.getContext('2d');
+                    tCtx.save();
+                    tCtx.strokeStyle = tail.color;
+                    tCtx.fillStyle = tail.color;
+                    tCtx.lineWidth = 3;
+                    tCtx.beginPath();
+                    tCtx.moveTo(15, 5); tCtx.lineTo(45, 35);
+                    tCtx.moveTo(45, 5); tCtx.lineTo(15, 35);
+                    tCtx.stroke();
+                    tCtx.restore();
 
-            let tailGrid = document.getElementById('tail-grid');
-            tailGrid.innerHTML = '';
+                    card.appendChild(tCanvas);
 
-            TAIL_SKINS.forEach(tail => {
-                let isEquipped = activeTailId === tail.id;
-                let card = document.createElement('div');
-                card.className = `p-2.5 rounded-2xl border flex flex-col items-center justify-between gap-1.5 transition cursor-pointer ${isEquipped ? 'bg-amber-500/20 border-amber-400' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'}`;
-                
-                let tCanvas = document.createElement('canvas');
-                tCanvas.width = 60; tCanvas.height = 40;
-                let tCtx = tCanvas.getContext('2d');
-                tCtx.save();
-                tCtx.strokeStyle = tail.color;
-                tCtx.fillStyle = tail.color;
-                tCtx.lineWidth = 3;
-                tCtx.beginPath();
-                tCtx.moveTo(15, 5); tCtx.lineTo(45, 35);
-                tCtx.moveTo(45, 5); tCtx.lineTo(15, 35);
-                tCtx.stroke();
-                tCtx.restore();
+                    let infoDiv = document.createElement('div');
+                    infoDiv.className = 'text-center';
+                    infoDiv.innerHTML = `
+                        <div class="text-[9px] font-bold text-white truncate max-w-[110px]">${tail.name}</div>
+                        <div class="text-[7px] text-amber-400 font-bold">${isEquipped ? 'EQUIPPED' : 'SELECT'}</div>
+                    `;
+                    card.appendChild(infoDiv);
 
-                card.appendChild(tCanvas);
-
-                let infoDiv = document.createElement('div');
-                infoDiv.className = 'text-center';
-                infoDiv.innerHTML = `
-                    <div class="text-[9px] font-bold text-white truncate max-w-[110px]">${tail.name}</div>
-                    <div class="text-[7px] text-amber-400 font-bold">${isEquipped ? 'EQUIPPED' : 'SELECT'}</div>
-                `;
-                card.appendChild(infoDiv);
-
-                card.onclick = () => {
-                    activeTailId = tail.id;
-                    saveSkins();
-                    renderShopUI();
-                };
-                tailGrid.appendChild(card);
-            });
+                    card.onclick = () => {
+                        activeTailId = tail.id;
+                        saveSkins();
+                        renderShopUI();
+                    };
+                    tailGrid.appendChild(card);
+                });
+            }
 
             let stringCost = 50 * (upgrades.stringLevel + 1);
             let speedCost = 75 * (upgrades.speedLevel + 1);
@@ -483,11 +605,18 @@
             dashHazardTimer = 0;
             activeBoss = null;
             bossAttackTimer = 0;
+            weatherTimer = 0;
+            weatherEventTimer = 0;
+            lightningFlashTimer = 0;
+            freezeTimer = 0;
+            currentWeather = WEATHER_TYPES[0];
+            adAvailable = true;
 
             document.getElementById('boss-hud').classList.add('hidden');
             document.getElementById('power-hud-btn').classList.add('hidden');
+            document.getElementById('weather-banner').innerText = currentWeather.name;
 
-            player.maxHp = 100 + (upgrades.stringLevel * 25);
+            player.maxHp = 150 + (upgrades.stringLevel * 50);
             player.hp = player.maxHp;
             player.speed = 5.5 + (upgrades.speedLevel * 0.8);
             player.shield = false;
@@ -499,7 +628,8 @@
 
             player.x = canvas.width / 2;
             player.targetX = canvas.width / 2;
-            player.y = canvas.height - 140;
+            player.y = canvas.height * 0.75;
+            player.targetY = canvas.height * 0.75;
 
             document.getElementById('menu-screen').classList.add('hidden');
             document.getElementById('shop-screen').classList.add('hidden');
@@ -537,23 +667,26 @@
         canvas.addEventListener('mousemove', (e) => {
             const rect = canvas.getBoundingClientRect();
             pointerX = e.clientX - rect.left;
+            pointerY = e.clientY - rect.top;
         });
         canvas.addEventListener('touchmove', (e) => {
             if (e.touches.length > 0) {
                 const rect = canvas.getBoundingClientRect();
                 pointerX = e.touches[0].clientX - rect.left;
+                pointerY = e.touches[0].clientY - rect.top;
             }
         }, {passive: true});
         canvas.addEventListener('touchstart', (e) => {
             if (e.touches.length > 0) {
                 const rect = canvas.getBoundingClientRect();
                 pointerX = e.touches[0].clientX - rect.left;
+                pointerY = e.touches[0].clientY - rect.top;
             }
         }, {passive: true});
 
         function spawnEntities() {
             spawnTimer++;
-            let spawnRate = Math.max(90, 220 - Math.floor(altitude / 300));
+            let spawnRate = Math.max(110, 260 - Math.floor(altitude / 300));
 
             if (spawnTimer >= spawnRate) {
                 spawnTimer = 0;
@@ -583,9 +716,11 @@
             }
 
             dashHazardTimer++;
-            if (dashHazardTimer >= Math.max(20, 50 - Math.floor(altitude / 450))) {
+            let hazardMult = currentWeather.id === 'blizzard' ? 1.4 : 1.0;
+            let lowLevelFrequencyBuffer = altitude < 2000 ? 55 : 45;
+            if (dashHazardTimer >= Math.max(20, (lowLevelFrequencyBuffer - Math.floor(altitude / 450)) / hazardMult)) {
                 dashHazardTimer = 0;
-                dashHazards.push(new DashFallingHazard());
+                dashHazards.push(new DashFallingHazard(hazardMult));
             }
         }
 
@@ -605,12 +740,44 @@
         function update() {
             if (gameState !== 'PLAYING') return;
 
+            weatherTimer++;
+            if (weatherTimer >= 1860) {
+                weatherTimer = 0;
+                weatherEventTimer = 0;
+                let nextIdx = (WEATHER_TYPES.findIndex(w => w.id === currentWeather.id) + 1) % WEATHER_TYPES.length;
+                currentWeather = WEATHER_TYPES[nextIdx];
+                document.getElementById('weather-banner').innerText = currentWeather.name;
+            }
+
+            weatherEventTimer++;
+            if (weatherEventTimer >= 600) {
+                weatherEventTimer = 0;
+                if (currentWeather.id === 'electric') {
+                    lightningFlashTimer = 35;
+                    audio.hit();
+                    if (player.shield) {
+                        player.shield = false;
+                    } else if (player.invincibleTimer === 0) {
+                        player.hp -= 15;
+                        addSparkles(player.x, player.y, '#38bdf8');
+                        if (player.hp <= 0) gameOver();
+                    }
+                } else if (currentWeather.id === 'snow') {
+                    freezeTimer = 60;
+                    addSparkles(player.x, player.y, '#e0f2fe');
+                }
+            }
+
+            if (lightningFlashTimer > 0) lightningFlashTimer--;
+            if (freezeTimer > 0) freezeTimer--;
+
+            let speedModifier = currentWeather.id === 'rain' ? 0.5 : 1.0;
             let baseVerticalSpeed = 0.6 + bossVerticalSpeedBonus;
             distanceTraveled += baseVerticalSpeed;
             altitude = Math.floor(distanceTraveled * 4);
 
             let newLevel = Math.floor(altitude / 1800) + 1;
-            if (newLevel !== level && newLevel <= 60) {
+            if (newLevel !== level && newLevel <= 100) {
                 level = newLevel;
                 if (level % 10 === 0) {
                     let bossIndex = (level / 10) - 1;
@@ -618,7 +785,7 @@
                         activeBoss = { ...BOSS_ROSTER[bossIndex], currentHp: BOSS_ROSTER[bossIndex].maxHp, x: canvas.width / 2, y: 100, vx: 2.5 };
                         document.getElementById('boss-name').innerText = activeBoss.name;
                         document.getElementById('boss-hud').classList.remove('hidden');
-                        document.getElementById('power-hud-btn').classList.remove('hidden'); // Show attack button during boss fight
+                        document.getElementById('power-hud-btn').classList.remove('hidden');
                     }
                 }
             }
@@ -676,7 +843,6 @@
             if (player.laserTimer > 0) player.laserTimer--;
             if (player.invincibleTimer > 0) player.invincibleTimer--;
 
-            // Update Power-Up Timers HUD Display
             let magContainer = document.getElementById('magnet-timer-container');
             if (player.magnetTimer > 0) {
                 magContainer.classList.remove('hidden');
@@ -701,7 +867,6 @@
                 laserContainer.classList.add('hidden');
             }
 
-            // VORTEX RING EFFECT
             if (player.vortexTimer > 0) {
                 let vortexRadius = player.width * 2.8;
                 for (let i = dashHazards.length - 1; i >= 0; i--) {
@@ -720,7 +885,6 @@
                 }
             }
 
-            // LASER BEAM SKILL EFFECT (2 seconds = 120 frames)
             if (player.laserTimer > 0) {
                 for (let i = dashHazards.length - 1; i >= 0; i--) {
                     let dh = dashHazards[i];
@@ -741,22 +905,53 @@
                 }
             }
 
-            let moveDir = 0;
-            if (keys.ArrowLeft || keys.KeyA) moveDir = -1;
-            if (keys.ArrowRight || keys.KeyD) moveDir = 1;
+            if (freezeTimer === 0) {
+                let moveDirX = 0;
+                if (keys.ArrowLeft || keys.KeyA) moveDirX = -1;
+                if (keys.ArrowRight || keys.KeyD) moveDirX = 1;
 
-            let currentSpeed = player.speed;
+                let moveDirY = 0;
+                if (keys.ArrowUp || keys.KeyW) moveDirY = -1;
+                if (keys.ArrowDown || keys.KeyS) moveDirY = 1;
 
-            if (moveDir !== 0) {
-                player.targetX += moveDir * currentSpeed;
-                pointerX = null;
-            } else if (pointerX !== null) {
-                let dx = pointerX - player.x;
-                player.targetX += dx * 0.22;
+                let currentSpeed = player.speed * speedModifier;
+
+                if (moveDirX !== 0) {
+                    player.targetX += moveDirX * currentSpeed;
+                    pointerX = null;
+                } else if (pointerX !== null) {
+                    let dx = pointerX - player.x;
+                    player.targetX += dx * 0.22 * speedModifier;
+                }
+
+                if (moveDirY !== 0) {
+                    player.targetY += moveDirY * currentSpeed;
+                    pointerY = null;
+                } else if (pointerY !== null) {
+                    let dy = pointerY - player.y;
+                    player.targetY += dy * 0.22 * speedModifier;
+                }
+
+                if (currentWeather.id === 'blizzard') {
+                    let midScreen = canvas.width / 2;
+                    let windFromLeft = weatherTimer < 930;
+                    if (windFromLeft) {
+                        player.targetX = Math.max(player.targetX, midScreen + 10);
+                        player.targetX += 1.5;
+                    } else {
+                        player.targetX = Math.min(player.targetX, midScreen - 10);
+                        player.targetX -= 1.5;
+                    }
+                }
+
+                player.targetX = Math.max(35, Math.min(canvas.width - 35, player.targetX));
+                
+                let halfScreenY = canvas.height * 0.5;
+                player.targetY = Math.max(halfScreenY, Math.min(canvas.height - 80, player.targetY));
+
+                player.x += (player.targetX - player.x) * 0.25;
+                player.y += (player.targetY - player.y) * 0.25;
             }
-
-            player.targetX = Math.max(35, Math.min(canvas.width - 35, player.targetX));
-            player.x += (player.targetX - player.x) * 0.25;
 
             spawnEntities();
 
@@ -787,7 +982,7 @@
                         if (activeBoss.currentHp <= 0) {
                             audio.powerup();
                             document.getElementById('boss-hud').classList.add('hidden');
-                            document.getElementById('power-hud-btn').classList.add('hidden'); // Hide attack button after boss defeated
+                            document.getElementById('power-hud-btn').classList.add('hidden');
                             activeBoss = null;
                             bossProjectiles = [];
                             coins += 50;
@@ -875,11 +1070,11 @@
                         audio.powerup();
                         addSparkles(p.x, p.y, '#a855f7');
                     } else if (p.type === 'vortex') {
-                        player.vortexTimer = 300;
+                        player.vortexTimer = 210;
                         audio.powerup();
                         addSparkles(p.x, p.y, '#c084fc');
                     } else if (p.type === 'laser') {
-                        player.laserTimer = 120; // 2 seconds duration
+                        player.laserTimer = 120;
                         audio.powerup();
                         addSparkles(p.x, p.y, '#f43f5e');
                     }
@@ -904,34 +1099,72 @@
             document.getElementById('hud-hp-bar').style.width = `${hpPct}%`;
         }
 
-        function drawRealisticKite(skin, w, h, targetCtx = ctx) {
+        function drawLongStreamerTail(targetCtx, startX, startY, length, baseAngle, swaySpeed, swayAmplitude, color, style) {
+            targetCtx.save();
+            targetCtx.strokeStyle = color;
+            targetCtx.fillStyle = color;
+            targetCtx.lineWidth = 3;
+
+            let segments = 6;
+            let segLen = length / segments;
+            let currentX = startX;
+            let currentY = startY;
+
+            let time = Date.now() * 0.005 * swaySpeed;
+
+            targetCtx.beginPath();
+            targetCtx.moveTo(currentX, currentY);
+
+            let points = [{x: currentX, y: currentY}];
+
+            for (let i = 1; i <= segments; i++) {
+                let wave = Math.sin(time + i * 0.7) * swayAmplitude * (i / segments);
+                let nextX = startX + Math.sin(baseAngle) * (i * segLen) + wave;
+                let nextY = startY + Math.cos(baseAngle) * (i * segLen);
+                
+                targetCtx.lineTo(nextX, nextY);
+                points.push({x: nextX, y: nextY});
+            }
+            targetCtx.stroke();
+
+            for (let i = 1; i < points.length; i += 2) {
+                let pt = points[i];
+                if (style === 'bows') {
+                    targetCtx.beginPath();
+                    targetCtx.arc(pt.x, pt.y, 4.5, 0, Math.PI * 2);
+                    targetCtx.fill();
+                    targetCtx.beginPath();
+                    targetCtx.ellipse(pt.x - 5, pt.y, 4, 2, 0, 0, Math.PI * 2);
+                    targetCtx.ellipse(pt.x + 5, pt.y, 4, 2, 0, 0, Math.PI * 2);
+                    targetCtx.fill();
+                } else if (style === 'butterfly') {
+                    targetCtx.font = '11px sans-serif';
+                    targetCtx.fillText('🦋', pt.x - 6, pt.y + 4);
+                } else if (style === 'heart') {
+                    targetCtx.font = '11px sans-serif';
+                    targetCtx.fillText('💖', pt.x - 6, pt.y + 4);
+                } else if (style === 'star') {
+                    targetCtx.font = '11px sans-serif';
+                    targetCtx.fillText('⭐', pt.x - 6, pt.y + 4);
+                } else {
+                    targetCtx.beginPath();
+                    targetCtx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
+                    targetCtx.fill();
+                }
+            }
+
+            targetCtx.restore();
+        }
+
+        function drawRealisticKite(skin, w, h, windTilt = 0, isFrozen = false, targetCtx = ctx) {
             targetCtx.save();
             
+            targetCtx.rotate(windTilt);
+
             let activeTail = TAIL_SKINS.find(t => t.id === activeTailId) || TAIL_SKINS[0];
 
-            targetCtx.save();
-            targetCtx.strokeStyle = activeTail.color;
-            targetCtx.fillStyle = activeTail.color;
-            targetCtx.lineWidth = 2.5;
-
-            targetCtx.beginPath();
-            targetCtx.moveTo(-w/2, -4);
-            targetCtx.quadraticCurveTo(-w/2 - 25, 10, -w/2 - 35, 30);
-            targetCtx.stroke();
-            if (activeTail.style === 'bows') {
-                targetCtx.beginPath(); targetCtx.arc(-w/2 - 20, 12, 5, 0, Math.PI*2); targetCtx.fill();
-                targetCtx.beginPath(); targetCtx.arc(-w/2 - 30, 24, 4, 0, Math.PI*2); targetCtx.fill();
-            }
-
-            targetCtx.beginPath();
-            targetCtx.moveTo(w/2, -4);
-            targetCtx.quadraticCurveTo(w/2 + 25, 10, w/2 + 35, 30);
-            targetCtx.stroke();
-            if (activeTail.style === 'bows') {
-                targetCtx.beginPath(); targetCtx.arc(w/2 + 20, 12, 5, 0, Math.PI*2); targetCtx.fill();
-                targetCtx.beginPath(); targetCtx.arc(w/2 + 30, 24, 4, 0, Math.PI*2); targetCtx.fill();
-            }
-            targetCtx.restore();
+            drawLongStreamerTail(targetCtx, -w/2 - 12, 0, 110, -0.2, 1.0, 22, activeTail.color, activeTail.style);
+            drawLongStreamerTail(targetCtx, w/2 + 12, 0, 110, 0.2, 1.2, -22, activeTail.color, activeTail.style);
 
             targetCtx.fillStyle = skin.secondary;
             targetCtx.strokeStyle = '#0f172a';
@@ -945,7 +1178,247 @@
             targetCtx.moveTo(w/2, 0); targetCtx.lineTo(w/2 + 16, 8); targetCtx.lineTo(w/2 + 10, 18);
             targetCtx.closePath(); targetCtx.fill(); targetCtx.stroke();
 
-            if (skin.shape === 'dalmatian') {
+            if (skin.shape === 'strawberry') {
+                targetCtx.fillStyle = skin.secondary; targetCtx.beginPath(); targetCtx.ellipse(0, -h/2 - 4, 12, 8, 0, 0, Math.PI * 2); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.moveTo(0, -h/2); targetCtx.lineTo(w/2, 0); targetCtx.lineTo(w/3, h/2); targetCtx.lineTo(-w/3, h/2); targetCtx.lineTo(-w/2, 0); targetCtx.closePath(); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#fef08a';
+                [-8, 0, 8].forEach(sx => { targetCtx.fillRect(sx - 1, -4, 2, 4); targetCtx.fillRect(sx - 5, 8, 2, 4); });
+            }
+            else if (skin.shape === 'bubblebee') {
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.roundRect(-w/2, -h/2, w, h, 24); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = skin.secondary;
+                targetCtx.fillRect(-w/2, -14, w, 8); targetCtx.fillRect(-w/2, 6, w, 8);
+                targetCtx.fillStyle = 'rgba(255,255,255,0.7)';
+                targetCtx.beginPath(); targetCtx.ellipse(-14, -h/2 - 6, 6, 12, -0.3, 0, Math.PI*2); targetCtx.ellipse(14, -h/2 - 6, 6, 12, 0.3, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+            }
+            else if (skin.shape === 'dinosaur') {
+                targetCtx.fillStyle = skin.secondary;
+                [-12, -4, 4, 12].forEach(dx => { targetCtx.beginPath(); targetCtx.arc(dx, -h/2 - 4, 5, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke(); });
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.roundRect(-w/2, -h/2, w, h, 20); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#ffffff'; targetCtx.beginPath(); targetCtx.arc(-8, -6, 6, 0, Math.PI*2); targetCtx.arc(8, -6, 6, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#0f172a'; targetCtx.beginPath(); targetCtx.arc(-8, -6, 2.5, 0, Math.PI*2); targetCtx.arc(8, -6, 2.5, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'ghostie') {
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -h/2); targetCtx.lineTo(w/2, 0); targetCtx.lineTo(w/2, h/2 - 4);
+                targetCtx.quadraticCurveTo(w/4, h/2 + 8, 0, h/2);
+                targetCtx.quadraticCurveTo(-w/4, h/2 + 8, -w/2, h/2 - 4);
+                targetCtx.lineTo(-w/2, 0); targetCtx.closePath(); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#0f172a';
+                targetCtx.beginPath(); targetCtx.arc(-8, -4, 4, 0, Math.PI*2); targetCtx.arc(8, -4, 4, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'axolotl') {
+                targetCtx.fillStyle = skin.secondary;
+                [-w/2 - 4, w/2 + 4].forEach((ax, idx) => {
+                    targetCtx.beginPath(); targetCtx.ellipse(ax, -6, 6, 14, idx === 0 ? 0.3 : -0.3, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                });
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.roundRect(-w/2, -h/2, w, h, 24); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#ffffff'; targetCtx.beginPath(); targetCtx.arc(-8, -6, 7, 0, Math.PI*2); targetCtx.arc(8, -6, 7, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#0f172a'; targetCtx.beginPath(); targetCtx.arc(-8, -6, 3, 0, Math.PI*2); targetCtx.arc(8, -6, 3, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'jellyfish') {
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.arc(0, -2, w/2, Math.PI, Math.PI * 2); targetCtx.lineTo(w/2, 6); targetCtx.quadraticCurveTo(0, 14, -w/2, 6); targetCtx.closePath(); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.strokeStyle = skin.secondary; targetCtx.lineWidth = 2;
+                [-12, -4, 4, 12].forEach(jx => {
+                    targetCtx.beginPath(); targetCtx.moveTo(jx, 6); targetCtx.quadraticCurveTo(jx + 4, 18, jx, h/2); targetCtx.stroke();
+                });
+            }
+            else if (skin.shape === 'sunflower') {
+                targetCtx.fillStyle = skin.primary;
+                for(let i=0; i<8; i++) {
+                    let ang = (i / 8) * Math.PI * 2;
+                    targetCtx.beginPath(); targetCtx.ellipse(Math.cos(ang)*16, Math.sin(ang)*16, 10, 6, ang, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                }
+                targetCtx.fillStyle = skin.secondary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.arc(0, 0, w/3, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#0f172a'; targetCtx.beginPath(); targetCtx.arc(-6, -4, 2.5, 0, Math.PI*2); targetCtx.arc(6, -4, 2.5, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'mushroom') {
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.arc(0, -4, w/2, Math.PI, Math.PI * 2); targetCtx.closePath(); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = skin.secondary; targetCtx.beginPath(); targetCtx.roundRect(-w/3, 0, (w/3)*2, h/2, 8); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#ffffff';
+                [-10, 6].forEach(mx => { targetCtx.beginPath(); targetCtx.arc(mx, -10, 4, 0, Math.PI*2); targetCtx.fill(); });
+            }
+            else if (skin.shape === 'cupidsheart') {
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, h/2);
+                targetCtx.bezierCurveTo(-w, 0, -w/2, -h/2, 0, -h/4);
+                targetCtx.bezierCurveTo(w/2, -h/2, w, 0, 0, h/2);
+                targetCtx.closePath(); targetCtx.fill(); targetCtx.stroke();
+            }
+            else if (skin.shape === 'cottoncloud') {
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath();
+                targetCtx.arc(-12, 0, 18, 0, Math.PI*2);
+                targetCtx.arc(12, 0, 18, 0, Math.PI*2);
+                targetCtx.arc(0, -10, 16, 0, Math.PI*2);
+                targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#0f172a'; targetCtx.beginPath(); targetCtx.arc(-8, -6, 3, 0, Math.PI*2); targetCtx.arc(8, -6, 3, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'unicorn') {
+                targetCtx.fillStyle = '#fef08a';
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -h/2 - 18); targetCtx.lineTo(5, -h/2); targetCtx.lineTo(-5, -h/2);
+                targetCtx.closePath(); targetCtx.fill(); targetCtx.stroke();
+
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.roundRect(-w/2, -h/2, w, h, 24); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#ffffff';
+                targetCtx.beginPath(); targetCtx.arc(-10, -6, 8, 0, Math.PI*2); targetCtx.arc(10, -6, 8, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#0f172a';
+                targetCtx.beginPath(); targetCtx.arc(-9, -6, 3, 0, Math.PI*2); targetCtx.arc(11, -6, 3, 0, Math.PI*2); targetCtx.fill();
+                targetCtx.fillStyle = '#f43f5e'; targetCtx.beginPath(); targetCtx.arc(0, 4, 5, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'chick') {
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.arc(0, 0, w/2, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#f97316';
+                targetCtx.beginPath(); targetCtx.moveTo(-4, 2); targetCtx.lineTo(4, 2); targetCtx.lineTo(0, 10); targetCtx.closePath(); targetCtx.fill();
+                targetCtx.fillStyle = '#0f172a';
+                targetCtx.beginPath(); targetCtx.arc(-8, -6, 3, 0, Math.PI*2); targetCtx.arc(8, -6, 3, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'penguin') {
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.roundRect(-w/2, -h/2, w, h, 26); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = skin.secondary;
+                targetCtx.beginPath(); targetCtx.ellipse(0, 4, w/3.2, h/3, 0, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#f97316';
+                targetCtx.beginPath(); targetCtx.ellipse(0, 12, 6, 4, 0, 0, Math.PI*2); targetCtx.fill();
+                targetCtx.fillStyle = '#0f172a';
+                targetCtx.beginPath(); targetCtx.arc(-8, -8, 3.5, 0, Math.PI*2); targetCtx.arc(8, -8, 3.5, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'fox') {
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -h/2); targetCtx.lineTo(w/2, h/3); targetCtx.lineTo(-w/2, h/3);
+                targetCtx.closePath(); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#ffffff';
+                targetCtx.beginPath(); targetCtx.moveTo(0, 2); targetCtx.lineTo(14, h/3); targetCtx.lineTo(-14, h/3); targetCtx.closePath(); targetCtx.fill();
+                targetCtx.fillStyle = '#0f172a';
+                targetCtx.beginPath(); targetCtx.arc(-10, -8, 3, 0, Math.PI*2); targetCtx.arc(10, -8, 3, 0, Math.PI*2); targetCtx.arc(0, 8, 3, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'frog') {
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.roundRect(-w/2, -h/2 + 6, w, h - 8, 22); targetCtx.fill(); targetCtx.stroke();
+                [-14, 14].forEach(ex => {
+                    targetCtx.fillStyle = skin.primary; targetCtx.beginPath(); targetCtx.arc(ex, -h/2 + 2, 9, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                    targetCtx.fillStyle = '#ffffff'; targetCtx.beginPath(); targetCtx.arc(ex, -h/2 + 2, 6, 0, Math.PI*2); targetCtx.fill();
+                    targetCtx.fillStyle = '#0f172a'; targetCtx.beginPath(); targetCtx.arc(ex, -h/2 + 2, 2.5, 0, Math.PI*2); targetCtx.fill();
+                });
+                targetCtx.fillStyle = '#0f172a'; targetCtx.beginPath(); targetCtx.arc(0, 4, 12, 0, 0.1); targetCtx.stroke();
+            }
+            else if (skin.shape === 'owl') {
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.roundRect(-w/2, -h/2, w, h, 20); targetCtx.fill(); targetCtx.stroke();
+                [-12, 12].forEach(ex => {
+                    targetCtx.fillStyle = skin.secondary; targetCtx.beginPath(); targetCtx.arc(ex, -4, 10, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                    targetCtx.fillStyle = '#0f172a'; targetCtx.beginPath(); targetCtx.arc(ex, -4, 4, 0, Math.PI*2); targetCtx.fill();
+                });
+                targetCtx.fillStyle = '#f59e0b';
+                targetCtx.beginPath(); targetCtx.moveTo(-4, 6); targetCtx.lineTo(4, 6); targetCtx.lineTo(0, 12); targetCtx.closePath(); targetCtx.fill();
+            }
+            else if (skin.shape === 'koala') {
+                targetCtx.fillStyle = skin.primary;
+                [-20, 20].forEach(ex => {
+                    targetCtx.beginPath(); targetCtx.arc(ex, -h/2 - 4, 10, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                });
+                targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.roundRect(-w/2, -h/2, w, h, 24); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = skin.secondary;
+                targetCtx.beginPath(); targetCtx.arc(0, 2, 14, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#0f172a';
+                targetCtx.beginPath(); targetCtx.arc(-8, -2, 3, 0, Math.PI*2); targetCtx.arc(8, -2, 3, 0, Math.PI*2); targetCtx.ellipse(0, 6, 7, 5, 0, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'hamster') {
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.roundRect(-w/2, -h/2, w, h, 26); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = skin.secondary;
+                targetCtx.beginPath(); targetCtx.ellipse(0, 6, w/2.4, h/3, 0, 0, Math.PI*2); targetCtx.fill();
+                [-10, 10].forEach(ex => {
+                    targetCtx.fillStyle = '#0f172a'; targetCtx.beginPath(); targetCtx.arc(ex, -4, 3, 0, Math.PI*2); targetCtx.fill();
+                });
+                targetCtx.fillStyle = '#f43f5e'; targetCtx.beginPath(); targetCtx.arc(0, 4, 4, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'cupcake') {
+                targetCtx.fillStyle = skin.secondary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.moveTo(-w/2 + 4, 4); targetCtx.lineTo(w/2 - 4, 4); targetCtx.lineTo(w/3, h/2); targetCtx.lineTo(-w/3, h/2); targetCtx.closePath(); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = skin.primary;
+                targetCtx.beginPath(); targetCtx.arc(0, 0, w/2.2, Math.PI, Math.PI * 2); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#fde047';
+                [-10, 0, 10].forEach(sx => {
+                    targetCtx.fillRect(sx - 2, -10, 4, 8);
+                });
+            }
+            else if (skin.shape === 'starfish') {
+                targetCtx.fillStyle = skin.primary; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath();
+                targetCtx.moveTo(0, -h/2); targetCtx.lineTo(10, -10); targetCtx.lineTo(w/2, -6); targetCtx.lineTo(12, 10);
+                targetCtx.lineTo(16, h/2); targetCtx.lineTo(0, h/3); targetCtx.lineTo(-16, h/2); targetCtx.lineTo(-12, 10);
+                targetCtx.lineTo(-w/2, -6); targetCtx.lineTo(-10, -10);
+                targetCtx.closePath(); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#ffffff';
+                targetCtx.beginPath(); targetCtx.arc(-6, -4, 4, 0, Math.PI*2); targetCtx.arc(6, -4, 4, 0, Math.PI*2); targetCtx.fill();
+                targetCtx.fillStyle = '#0f172a';
+                targetCtx.beginPath(); targetCtx.arc(-6, -4, 2, 0, Math.PI*2); targetCtx.arc(6, -4, 2, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'bunny') {
+                targetCtx.fillStyle = '#f472b6';
+                targetCtx.beginPath();
+                targetCtx.ellipse(-12, -h/2 - 12, 6, 20, -0.2, 0, Math.PI * 2);
+                targetCtx.ellipse(12, -h/2 - 12, 6, 20, 0.2, 0, Math.PI * 2);
+                targetCtx.fill(); targetCtx.stroke();
+
+                targetCtx.fillStyle = '#f472b6'; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.roundRect(-w/2, -h/2, w, h, 24); targetCtx.fill(); targetCtx.stroke();
+
+                targetCtx.fillStyle = '#ffffff';
+                targetCtx.beginPath(); targetCtx.arc(-10, -6, 9, 0, Math.PI*2); targetCtx.arc(10, -6, 9, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.fillStyle = '#0f172a';
+                targetCtx.beginPath(); targetCtx.arc(-9, -6, 3.5, 0, Math.PI*2); targetCtx.arc(11, -6, 3.5, 0, Math.PI*2); targetCtx.fill();
+                targetCtx.fillStyle = '#f43f5e'; targetCtx.beginPath(); targetCtx.arc(0, 4, 5, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'kitty') {
+                targetCtx.fillStyle = '#fb923c';
+                targetCtx.beginPath();
+                targetCtx.moveTo(-w/2 + 2, -h/2 + 4); targetCtx.lineTo(-w/2 - 8, -h/2 - 14); targetCtx.lineTo(-w/3, -h/2);
+                targetCtx.moveTo(w/2 - 2, -h/2 + 4); targetCtx.lineTo(w/2 + 8, -h/2 - 14); targetCtx.lineTo(w/3, -h/2);
+                targetCtx.fill(); targetCtx.stroke();
+
+                targetCtx.fillStyle = '#fb923c'; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.roundRect(-w/2, -h/2, w, h, 20); targetCtx.fill(); targetCtx.stroke();
+
+                [-10, 10].forEach(ex => {
+                    targetCtx.fillStyle = '#ffffff'; targetCtx.beginPath(); targetCtx.arc(ex, -6, 8, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                    targetCtx.fillStyle = '#1e293b'; targetCtx.beginPath(); targetCtx.arc(ex, -6, 3, 0, Math.PI*2); targetCtx.fill();
+                });
+                targetCtx.fillStyle = '#f43f5e'; targetCtx.beginPath(); targetCtx.ellipse(0, 4, 5, 3, 0, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'teddy') {
+                targetCtx.fillStyle = '#b45309';
+                [-20, 20].forEach(ex => {
+                    targetCtx.beginPath(); targetCtx.arc(ex, -h/2 - 2, 11, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+                });
+
+                targetCtx.fillStyle = '#b45309'; targetCtx.strokeStyle = '#0f172a'; targetCtx.lineWidth = 3;
+                targetCtx.beginPath(); targetCtx.roundRect(-w/2, -h/2, w, h, 22); targetCtx.fill(); targetCtx.stroke();
+
+                targetCtx.fillStyle = '#fde68a';
+                targetCtx.beginPath(); targetCtx.arc(0, 4, 16, 0, Math.PI*2); targetCtx.fill(); targetCtx.stroke();
+
+                [-8, 8].forEach(ex => {
+                    targetCtx.fillStyle = '#0f172a'; targetCtx.beginPath(); targetCtx.arc(ex, 0, 3, 0, Math.PI*2); targetCtx.fill();
+                });
+                targetCtx.fillStyle = '#0f172a'; targetCtx.beginPath(); targetCtx.ellipse(0, 8, 5, 3.5, 0, 0, Math.PI*2); targetCtx.fill();
+            }
+            else if (skin.shape === 'dalmatian') {
                 targetCtx.fillStyle = '#1e293b';
                 targetCtx.beginPath();
                 targetCtx.ellipse(-w/2 - 2, 2, 16, 26, -0.3, 0, Math.PI * 2);
@@ -1157,6 +1630,25 @@
                 targetCtx.fillStyle = '#ef4444'; targetCtx.beginPath(); targetCtx.arc(0, 14, 5, 0, Math.PI*2); targetCtx.fill();
             }
 
+            // Glow Frost Crystals directly on the kite when frozen
+            if (isFrozen) {
+                targetCtx.save();
+                targetCtx.shadowColor = '#ffffff';
+                targetCtx.shadowBlur = 18;
+                targetCtx.fillStyle = 'rgba(224, 242, 254, 0.85)';
+                targetCtx.strokeStyle = '#bae6fd';
+                targetCtx.lineWidth = 2;
+                // Draw sparkling frost patches/crystals over the surface
+                [-14, 0, 14].forEach(fx => {
+                    targetCtx.beginPath();
+                    targetCtx.arc(fx, -12, 5, 0, Math.PI * 2);
+                    targetCtx.arc(fx + 8, 4, 4, 0, Math.PI * 2);
+                    targetCtx.fill();
+                    targetCtx.stroke();
+                });
+                targetCtx.restore();
+            }
+
             targetCtx.restore();
         }
 
@@ -1165,17 +1657,83 @@
 
             let skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
             if (altitude < 5000) {
-                skyGrad.addColorStop(0, '#0ea5e9');
-                skyGrad.addColorStop(1, '#0369a1');
+                skyGrad.addColorStop(0, '#03254e');
+                skyGrad.addColorStop(1, '#010d1a');
             } else if (altitude < 15000) {
-                skyGrad.addColorStop(0, '#4f46e5');
-                skyGrad.addColorStop(1, '#1e1b4b');
+                skyGrad.addColorStop(0, '#312e81');
+                skyGrad.addColorStop(1, '#090818');
             } else {
-                skyGrad.addColorStop(0, '#0f172a');
+                skyGrad.addColorStop(0, '#090d16');
                 skyGrad.addColorStop(1, '#020617');
             }
             ctx.fillStyle = skyGrad;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (currentWeather.tint) {
+                ctx.fillStyle = currentWeather.tint;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // Weather Background Effects Rendering with Directional Wind support
+            if (currentWeather.id === 'electric' && lightningFlashTimer > 0) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.save();
+                ctx.strokeStyle = '#ffffff';
+                ctx.fillStyle = '#38bdf8';
+                ctx.shadowColor = '#00f3ff';
+                ctx.shadowBlur = 20;
+                ctx.lineWidth = 3.5;
+                ctx.beginPath();
+                ctx.moveTo(canvas.width * 0.55, 0);
+                ctx.lineTo(canvas.width * 0.42, canvas.height * 0.25);
+                ctx.lineTo(canvas.width * 0.52, canvas.height * 0.28);
+                ctx.lineTo(canvas.width * 0.35, canvas.height * 0.55);
+                ctx.lineTo(canvas.width * 0.48, canvas.height * 0.58);
+                ctx.lineTo(canvas.width * 0.38, canvas.height * 0.85);
+                ctx.lineTo(canvas.width * 0.45, canvas.height);
+                ctx.stroke();
+                ctx.restore();
+            } else if (currentWeather.id === 'blizzard') {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+                ctx.lineWidth = 2.0;
+                let windFromLeft = weatherTimer < 930;
+                let windTime = Date.now() * 0.03;
+                for (let i = 0; i < 16; i++) {
+                    let wx = windFromLeft ? (i * 45 + windTime * 35) % canvas.width : canvas.width - ((i * 45 + windTime * 35) % canvas.width);
+                    let wy = (i * 65) % canvas.height;
+                    ctx.beginPath();
+                    ctx.moveTo(wx, wy);
+                    ctx.lineTo(windFromLeft ? wx - 50 : wx + 50, wy + 12);
+                    ctx.stroke();
+                }
+            } else if (currentWeather.id === 'rain') {
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+                ctx.lineWidth = 1.2;
+                let rainTime = Date.now() * 0.06;
+                for (let i = 0; i < 30; i++) {
+                    let rx = (i * 45) % canvas.width;
+                    let ry = (i * 90 + rainTime * 45) % canvas.height;
+                    ctx.beginPath();
+                    ctx.moveTo(rx, ry);
+                    ctx.lineTo(rx - 3, ry + 14);
+                    ctx.stroke();
+                }
+            } else if (currentWeather.id === 'snow') {
+                // Detailed snowflake shapes floating in the background
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                ctx.shadowColor = '#38bdf8';
+                ctx.shadowBlur = 8;
+                let snowTime = Date.now() * 0.002;
+                for (let i = 0; i < 24; i++) {
+                    let sx = (i * 45 + Math.sin(snowTime + i) * 20) % canvas.width;
+                    let sy = (i * 70 + snowTime * 40) % canvas.height;
+                    ctx.font = '12px sans-serif';
+                    ctx.fillText('❄️', sx, sy);
+                }
+                ctx.shadowBlur = 0;
+            }
 
             if (altitude >= 8000) {
                 ctx.fillStyle = '#ffffff';
@@ -1224,7 +1782,6 @@
                 dh.draw(ctx);
             }
 
-            // Laser Beam Visual Effect
             if (player.laserTimer > 0) {
                 ctx.save();
                 ctx.shadowColor = '#f43f5e';
@@ -1334,10 +1891,17 @@
             let activeSkin = KITE_SKINS.find(s => s.id === activeSkinId) || KITE_SKINS[0];
             ctx.save();
             ctx.translate(player.x, player.y);
-            if (player.invincibleTimer > 0 && Math.floor(player.invincibleTimer / 4) % 2 === 0) {
-                ctx.globalAlpha = 0.4;
+            if ((player.invincibleTimer > 0 && Math.floor(player.invincibleTimer / 4) % 2 === 0)) {
+                ctx.globalAlpha = 0.5;
             }
-            drawRealisticKite(activeSkin, player.width, player.height, ctx);
+            
+            let currentWindTilt = 0;
+            if (currentWeather.id === 'blizzard') {
+                let windFromLeft = weatherTimer < 930;
+                currentWindTilt = windFromLeft ? 0.22 : -0.22;
+            }
+
+            drawRealisticKite(activeSkin, player.width, player.height, currentWindTilt, freezeTimer > 0, ctx);
 
             if (player.vortexTimer > 0) {
                 ctx.strokeStyle = '#c084fc';
@@ -1369,16 +1933,53 @@
             gameState = 'GAMEOVER';
             if (altitude > highAltitude) {
                 highAltitude = altitude;
-                localStorage.setItem('kite_high_v17', highAltitude);
+                localStorage.setItem('kite_high_v24', highAltitude);
             }
-            localStorage.setItem('kite_coins_v17', coins);
+            localStorage.setItem('kite_coins_v24', coins);
 
             document.getElementById('go-altitude').innerText = `${altitude} m`;
             document.getElementById('go-coins').innerText = sessionCoins;
             document.getElementById('go-high').innerText = `${highAltitude} m`;
             document.getElementById('power-hud-btn').classList.add('hidden');
+            
+            let watchAdBtn = document.getElementById('watch-ad-btn');
+            if (adAvailable) {
+                watchAdBtn.classList.remove('hidden');
+            } else {
+                watchAdBtn.classList.add('hidden');
+            }
+
             document.getElementById('gameover-screen').classList.remove('hidden');
         }
+
+        document.getElementById('watch-ad-btn').addEventListener('click', () => {
+            document.getElementById('gameover-screen').classList.add('hidden');
+            let adScreen = document.getElementById('ad-screen');
+            adScreen.classList.remove('hidden');
+
+            let countdown = 3;
+            let timerEl = document.getElementById('ad-timer');
+            timerEl.innerText = `Ad playing... ${countdown}s`;
+
+            let adInterval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    timerEl.innerText = `Ad playing... ${countdown}s`;
+                } else {
+                    clearInterval(adInterval);
+                    adScreen.classList.add('hidden');
+                    adAvailable = false;
+
+                    player.hp = player.maxHp;
+                    player.invincibleTimer = 180;
+                    gameState = 'PLAYING';
+                    if (activeBoss) {
+                        document.getElementById('boss-hud').classList.remove('hidden');
+                        document.getElementById('power-hud-btn').classList.remove('hidden');
+                    }
+                }
+            }, 1000);
+        });
 
         function loop() {
             update();
@@ -1386,7 +1987,6 @@
             requestAnimationFrame(loop);
         }
 
-        // Restart Dropdown Menu Logic & Confirmation Prompts
         const dropdownBtn = document.getElementById('restart-dropdown-btn');
         const dropdownMenu = document.getElementById('restart-dropdown-menu');
 
@@ -1442,14 +2042,14 @@
 
         document.getElementById('shop-btn').addEventListener('click', () => {
             if (gameState === 'PLAYING') gameState = 'PAUSED';
-            renderShopUI();
+            switchShopTab('kites');
             document.getElementById('menu-screen').classList.add('hidden');
             document.getElementById('shop-screen').classList.remove('hidden');
         });
 
         document.getElementById('top-shop-btn').addEventListener('click', () => {
             if (gameState === 'PLAYING') gameState = 'PAUSED';
-            renderShopUI();
+            switchShopTab('kites');
             document.getElementById('menu-screen').classList.add('hidden');
             document.getElementById('gameover-screen').classList.add('hidden');
             document.getElementById('shop-screen').classList.remove('hidden');
@@ -1476,8 +2076,8 @@
             if (upgrades.stringLevel < 3 && coins >= cost) {
                 coins -= cost;
                 upgrades.stringLevel++;
-                localStorage.setItem('kite_up_string_v17', upgrades.stringLevel);
-                localStorage.setItem('kite_coins_v17', coins);
+                localStorage.setItem('kite_up_string_v24', upgrades.stringLevel);
+                localStorage.setItem('kite_coins_v24', coins);
                 renderShopUI();
             }
         });
@@ -1487,8 +2087,8 @@
             if (upgrades.speedLevel < 3 && coins >= cost) {
                 coins -= cost;
                 upgrades.speedLevel++;
-                localStorage.setItem('kite_up_speed_v17', upgrades.speedLevel);
-                localStorage.setItem('kite_coins_v17', coins);
+                localStorage.setItem('kite_up_speed_v24', upgrades.speedLevel);
+                localStorage.setItem('kite_coins_v24', coins);
                 renderShopUI();
             }
         });
