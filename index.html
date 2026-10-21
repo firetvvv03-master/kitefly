@@ -467,6 +467,8 @@
         let keys = { ArrowLeft: false, ArrowRight: false, ArrowUp: false, ArrowDown: false, KeyA: false, KeyD: false, KeyW: false, KeyS: false, Space: false };
         let pointerX = null;
         let pointerY = null;
+        let isTouchMode = false;
+        const TOUCH_Y_OFFSET = 70; // Offsets kite 70px above user's finger on touch screens
 
         function resizeCanvas() {
             const container = canvas.parentElement;
@@ -725,24 +727,25 @@
         document.getElementById('power-action-btn').addEventListener('click', triggerPowerAttack);
 
         canvas.addEventListener('mousemove', (e) => {
+            isTouchMode = false;
             const rect = canvas.getBoundingClientRect();
             pointerX = e.clientX - rect.left;
             pointerY = e.clientY - rect.top;
         });
-        canvas.addEventListener('touchmove', (e) => {
+
+        function handleTouchPointer(e) {
+            isTouchMode = true;
             if (e.touches.length > 0) {
                 const rect = canvas.getBoundingClientRect();
                 pointerX = e.touches[0].clientX - rect.left;
-                pointerY = e.touches[0].clientY - rect.top;
+                // Offset pointerY so kite flies 70px above user's finger point
+                pointerY = (e.touches[0].clientY - rect.top) - TOUCH_Y_OFFSET;
             }
-        }, {passive: true});
-        canvas.addEventListener('touchstart', (e) => {
-            if (e.touches.length > 0) {
-                const rect = canvas.getBoundingClientRect();
-                pointerX = e.touches[0].clientX - rect.left;
-                pointerY = e.touches[0].clientY - rect.top;
-            }
-        }, {passive: true});
+        }
+
+        canvas.addEventListener('touchmove', handleTouchPointer, {passive: true});
+        canvas.addEventListener('touchstart', handleTouchPointer, {passive: true});
+        canvas.addEventListener('touchend', () => { pointerX = null; pointerY = null; }, {passive: true});
 
         function spawnEntities() {
             spawnTimer++;
@@ -1008,7 +1011,7 @@
 
                 player.targetX = Math.max(35, Math.min(canvas.width - 35, player.targetX));
                 
-                let halfScreenY = canvas.height * 0.5;
+                let halfScreenY = canvas.height * 0.25;
                 player.targetY = Math.max(halfScreenY, Math.min(canvas.height - 80, player.targetY));
 
                 player.x += (player.targetX - player.x) * 0.25;
@@ -1804,6 +1807,27 @@
                     let sy = (i * 97) % canvas.height;
                     ctx.fillRect(sx, sy, 1.8, 1.8);
                 }
+            }
+
+            // Draw Touch Point Indicator Ring on Touch Devices
+            if (isTouchMode && pointerX !== null && pointerY !== null) {
+                ctx.save();
+                let actualFingerY = pointerY + TOUCH_Y_OFFSET;
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.shadowColor = '#38bdf8';
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(pointerX, actualFingerY, 16, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(pointerX, actualFingerY - 8);
+                ctx.lineTo(pointerX, pointerY + 12);
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.3)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                ctx.restore();
             }
 
             if (activeBoss) {
