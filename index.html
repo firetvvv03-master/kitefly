@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kite Ascent Arcade - Boss Attack Edition</title>
+    <title>Kite Ascent Arcade - Quest Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -26,12 +26,30 @@
         .glow-text {
             text-shadow: 0 0 25px rgba(56, 189, 248, 0.7), 0 0 50px rgba(168, 85, 247, 0.5);
         }
+        @keyframes toastSlide {
+            0% { transform: translateY(-100%); opacity: 0; }
+            15% { transform: translateY(0); opacity: 1; }
+            85% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100%); opacity: 0; }
+        }
+        .toast-animate {
+            animation: toastSlide 3.5s forwards ease-in-out;
+        }
     </style>
 </head>
 <body class="w-screen h-screen flex flex-col items-center justify-center relative overflow-hidden">
 
     <div id="game-container" class="relative w-full max-w-md h-full max-h-none md:max-h-[880px] shadow-2xl rounded-none md:rounded-3xl overflow-hidden bg-slate-950 border-0 md:border-4 border-sky-500/40 flex flex-col">
         
+        <!-- Achievement Unlock Toast Notification -->
+        <div id="achievement-toast" class="absolute top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-slate-950 rounded-2xl border-2 border-amber-200 shadow-2xl flex items-center gap-3 pointer-events-none hidden">
+            <span class="text-2xl">🏆</span>
+            <div class="flex flex-col">
+                <span class="text-[8px] arcade-font font-black text-slate-900 uppercase">QUEST COMPLETED!</span>
+                <span id="toast-title" class="text-xs font-bold text-slate-950">Sky High</span>
+            </div>
+        </div>
+
         <!-- Top HUD Header -->
         <div id="hud" class="absolute top-0 left-0 w-full p-4 flex justify-between items-center z-20 bg-gradient-to-b from-slate-950/90 via-slate-950/40 to-transparent pointer-events-none">
             <div class="flex flex-col">
@@ -57,7 +75,10 @@
 
         <!-- Top Menu Navigation Bar -->
         <div class="absolute top-20 left-0 w-full px-4 flex justify-between items-center z-20 pointer-events-auto">
-            <button id="top-shop-btn" class="px-2.5 py-1 bg-slate-900/90 hover:bg-slate-800 text-amber-300 border border-amber-500/40 rounded-lg arcade-font text-[7px] shadow-lg transition active:scale-95">✨ SHOP</button>
+            <div class="flex gap-1.5">
+                <button id="top-shop-btn" class="px-2.5 py-1 bg-slate-900/90 hover:bg-slate-800 text-amber-300 border border-amber-500/40 rounded-lg arcade-font text-[7px] shadow-lg transition active:scale-95">✨ SHOP</button>
+                <button id="top-quests-btn" class="px-2.5 py-1 bg-slate-900/90 hover:bg-slate-800 text-purple-300 border border-purple-500/40 rounded-lg arcade-font text-[7px] shadow-lg transition active:scale-95">📜 QUESTS</button>
+            </div>
             
             <!-- Restart Dropdown Container -->
             <div class="relative inline-block text-left">
@@ -85,7 +106,7 @@
             </div>
         </div>
 
-        <!-- Boss Health Bar HUD (Appears during boss fights) -->
+        <!-- Boss Health Bar HUD -->
         <div id="boss-hud" class="absolute top-36 left-0 w-full px-4 flex flex-col items-center z-20 hidden pointer-events-none">
             <span id="boss-name" class="text-[9px] arcade-font text-rose-400 mb-1 animate-pulse">⚠️ BOSS ⚠️</span>
             <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-rose-500/60 shadow-lg">
@@ -96,7 +117,7 @@
         <!-- Canvas Game Layer -->
         <canvas id="gameCanvas" class="w-full h-full cursor-crosshair"></canvas>
 
-        <!-- On-Screen Power Attack Button (Only visible during Boss Fights) -->
+        <!-- On-Screen Power Attack Button -->
         <div id="power-hud-btn" class="absolute bottom-6 right-6 z-20 hidden">
             <button id="power-action-btn" class="w-16 h-16 bg-gradient-to-tr from-fuchsia-600 via-purple-600 to-sky-400 hover:scale-105 active:scale-95 rounded-full border-2 border-white/80 shadow-2xl flex items-center justify-center text-white arcade-font text-[10px] transition">
                 💥
@@ -105,19 +126,38 @@
 
         <!-- Main Menu Overlay -->
         <div id="menu-screen" class="absolute inset-0 bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center z-30 p-6 text-center">
-            <div class="mb-3 px-3 py-1 bg-sky-500/10 border border-sky-500/30 rounded-full text-sky-400 arcade-font text-[8px] tracking-widest uppercase animate-pulse">Boss Attack Edition</div>
+            <div class="mb-3 px-3 py-1 bg-sky-500/10 border border-sky-500/30 rounded-full text-sky-400 arcade-font text-[8px] tracking-widest uppercase animate-pulse">Boss Attack & Quest Edition</div>
             <h1 class="text-3xl md:text-4xl font-extrabold arcade-font text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-pink-400 to-amber-300 mb-2 glow-text">KITE ASCENT</h1>
-            <p class="text-xs text-slate-400 mb-6 max-w-[260px]">Fight aggressive bosses every 10 levels, dodge hazards, and collect new skills!</p>
+            <p class="text-xs text-slate-400 mb-6 max-w-[260px]">Fight aggressive bosses, complete flight quests, and customize your kite!</p>
             
-            <div class="flex flex-col gap-3 w-full max-w-xs">
+            <div class="flex flex-col gap-2.5 w-full max-w-xs">
                 <button id="start-btn" class="w-full py-4 bg-gradient-to-r from-pink-500 via-indigo-600 to-sky-500 hover:opacity-90 text-white font-bold arcade-font text-xs rounded-2xl shadow-xl transform transition active:scale-95 border-b-4 border-indigo-900">LAUNCH KITE</button>
-                <button id="shop-btn" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold arcade-font text-xs rounded-2xl shadow-lg border border-amber-500/40 transform transition active:scale-95 flex items-center justify-center gap-2">
+                <button id="shop-btn" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold arcade-font text-xs rounded-2xl shadow-lg border border-amber-500/40 transform transition active:scale-95 flex items-center justify-center gap-2">
                     <span>✨ KITE WARDROBE</span>
+                </button>
+                <button id="quests-btn" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-purple-300 font-bold arcade-font text-xs rounded-2xl shadow-lg border border-purple-500/40 transform transition active:scale-95 flex items-center justify-center gap-2">
+                    <span>📜 QUESTS & ACHIEVEMENTS</span>
                 </button>
             </div>
         </div>
 
-        <!-- Shop & Hangar Overlay with Tab Navigation -->
+        <!-- Quests & Achievements Overlay -->
+        <div id="quests-screen" class="absolute inset-0 bg-slate-950/98 backdrop-blur-2xl flex flex-col items-center justify-between z-30 p-6 hidden">
+            <div class="w-full max-w-xs flex justify-between items-center mt-2">
+                <h2 class="text-base font-black arcade-font text-purple-400">FLIGHT QUESTS</h2>
+                <div class="flex items-center gap-1 bg-purple-950/80 border border-purple-500/40 px-2.5 py-1 rounded-full text-[9px] arcade-font text-purple-300">
+                    🏆 <span id="quests-completed-count">0/6</span>
+                </div>
+            </div>
+
+            <div id="quests-list-container" class="w-full max-w-xs flex-1 my-3 overflow-y-auto pr-1 flex flex-col gap-2.5">
+                <!-- Dynamically generated quests -->
+            </div>
+
+            <button id="back-from-quests" class="w-full max-w-xs py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold arcade-font text-xs rounded-2xl shadow border border-slate-700">BACK</button>
+        </div>
+
+        <!-- Shop & Hangar Overlay -->
         <div id="shop-screen" class="absolute inset-0 bg-slate-950/98 backdrop-blur-2xl flex flex-col items-center justify-between z-30 p-6 hidden">
             <div class="w-full max-w-xs flex justify-between items-center mt-2">
                 <h2 class="text-base font-black arcade-font text-pink-400">KITE WARDROBE</h2>
@@ -127,7 +167,6 @@
                 </div>
             </div>
 
-            <!-- Tab Buttons Header -->
             <div class="w-full max-w-xs grid grid-cols-4 gap-1 mt-2">
                 <button id="tab-btn-kites" class="py-2 bg-pink-600 text-white font-bold arcade-font text-[7px] rounded-lg shadow transition active:scale-95">KITES</button>
                 <button id="tab-btn-ropes" class="py-2 bg-slate-900 hover:bg-slate-800 text-sky-300 border border-sky-500/30 font-bold arcade-font text-[7px] rounded-lg shadow transition active:scale-95">ROPES</button>
@@ -135,7 +174,6 @@
                 <button id="tab-btn-upgrades" class="py-2 bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30 font-bold arcade-font text-[7px] rounded-lg shadow transition active:scale-95">GEAR</button>
             </div>
 
-            <!-- Tab Content View Container -->
             <div class="w-full max-w-xs flex-1 my-3 overflow-y-auto pr-1 flex flex-col gap-3">
                 <div id="tab-content-kites" class="grid grid-cols-2 gap-2.5"></div>
                 <div id="tab-content-ropes" class="grid grid-cols-2 gap-2.5 hidden"></div>
@@ -204,7 +242,7 @@
                 <span class="text-xs font-bold text-white">Kite Ascent Pro Arcade</span>
                 <span id="ad-timer" class="text-[10px] text-amber-300 mt-2 arcade-font">Ad playing... 3s</span>
             </div>
-            <p class="text-[10px] text-slate-400 max-w-[240px]">Watch this short message to fully repair your kite and resume flight!</p>
+            <p id="ad-purpose-text" class="text-[10px] text-slate-400 max-w-[240px]">Watch this short message to fully repair your kite and resume flight!</p>
         </div>
 
         <!-- Game Over Overlay -->
@@ -252,9 +290,127 @@
             powerup() { this.playTone(523.25, 'triangle', 0.1, 0.1); setTimeout(()=>this.playTone(659.25, 'triangle', 0.1, 0.1), 70); setTimeout(()=>this.playTone(783.99, 'triangle', 0.2, 0.15), 140); }
             powerAttack() { this.playTone(587.33, 'square', 0.3, 0.2); setTimeout(()=>this.playTone(880, 'sawtooth', 0.4, 0.25), 100); }
             hit() { this.playTone(160, 'sawtooth', 0.2, 0.2); }
+            questComplete() { this.playTone(523.25, 'sine', 0.1, 0.2); setTimeout(()=>this.playTone(659.25, 'sine', 0.1, 0.2), 80); setTimeout(()=>this.playTone(783.99, 'sine', 0.1, 0.2), 160); setTimeout(()=>this.playTone(1046.50, 'sine', 0.25, 0.25), 240); }
         }
 
         const audio = new SoundEngine();
+
+        // --- Quest System Definition & Persistence ---
+        const QUESTS_DATA = [
+            { id: 'q_altitude', title: 'Sky High', desc: 'Reach 2,000m Altitude', goal: 2000, reward: 100, key: 'altitude' },
+            { id: 'q_stars', title: 'Star Collector', desc: 'Collect 100 Stars Total', goal: 100, reward: 80, key: 'totalStars' },
+            { id: 'q_boss', title: 'Boss Slayer', desc: 'Defeat 1 Boss', goal: 1, reward: 150, key: 'bossesKilled' },
+            { id: 'q_weather', title: 'Storm Rider', desc: 'Survive 3 Weather Shifts', goal: 3, reward: 90, key: 'weatherShifts' },
+            { id: 'q_shield', title: 'Shield Master', desc: 'Pick up 10 Shield Power-Ups', goal: 10, reward: 75, key: 'shieldsPicked' },
+            { id: 'q_laser', title: 'Laser Enthusiast', desc: 'Pick up 5 Laser Power-Ups', goal: 5, reward: 85, key: 'lasersPicked' }
+        ];
+
+        let questStats = JSON.parse(localStorage.getItem('kite_quest_stats_v25') || JSON.stringify({
+            altitude: 0, totalStars: 0, bossesKilled: 0, weatherShifts: 0, shieldsPicked: 0, lasersPicked: 0
+        }));
+
+        let questClaims = JSON.parse(localStorage.getItem('kite_quest_claims_v25') || JSON.stringify({}));
+
+        function saveQuestData() {
+            localStorage.setItem('kite_quest_stats_v25', JSON.stringify(questStats));
+            localStorage.setItem('kite_quest_claims_v25', JSON.stringify(questClaims));
+        }
+
+        function triggerToast(title) {
+            let toast = document.getElementById('achievement-toast');
+            document.getElementById('toast-title').innerText = title;
+            toast.classList.remove('hidden');
+            toast.classList.remove('toast-animate');
+            void toast.offsetWidth; // Force reflow
+            toast.classList.add('toast-animate');
+            audio.questComplete();
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+
+        function updateQuestProgress(key, val, isAdditive = false) {
+            if (isAdditive) questStats[key] = (questStats[key] || 0) + val;
+            else questStats[key] = Math.max(questStats[key] || 0, val);
+
+            QUESTS_DATA.forEach(q => {
+                if (q.key === key && !questClaims[q.id]) {
+                    let curVal = questStats[q.key] || 0;
+                    if (curVal >= q.goal && !questClaims[q.id + '_toast']) {
+                        questClaims[q.id + '_toast'] = true;
+                        triggerToast(q.title);
+                    }
+                }
+            });
+
+            saveQuestData();
+        }
+
+        function renderQuestsUI() {
+            let container = document.getElementById('quests-list-container');
+            container.innerHTML = '';
+
+            let completedCount = 0;
+
+            QUESTS_DATA.forEach(q => {
+                let currentVal = Math.min(q.goal, questStats[q.key] || 0);
+                let isDone = currentVal >= q.goal;
+                let isClaimed = !!questClaims[q.id];
+
+                if (isDone) completedCount++;
+
+                let card = document.createElement('div');
+                card.className = `p-3 rounded-2xl border flex flex-col gap-2 ${isClaimed ? 'bg-slate-900/60 border-slate-800/80 opacity-70' : (isDone ? 'bg-purple-950/40 border-purple-500/60' : 'bg-slate-900/90 border-slate-800')}`;
+
+                let pct = Math.floor((currentVal / q.goal) * 100);
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                                ${isDone ? '✨' : '🎯'} ${q.title}
+                            </div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">${q.desc}</div>
+                        </div>
+                        <div class="flex items-center gap-1 text-[9px] arcade-font text-amber-300">
+                            +${q.reward}⭐
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 mt-1">
+                        <div class="flex-1 h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                            <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300" style="width: ${pct}%"></div>
+                        </div>
+                        <span class="text-[8px] arcade-font ${isDone ? 'text-emerald-400' : 'text-slate-400'}">${currentVal}/${q.goal}</span>
+                    </div>
+                `;
+
+                if (isDone && !isClaimed) {
+                    let claimBtn = document.createElement('button');
+                    claimBtn.className = "w-full py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-90 text-slate-950 font-black arcade-font text-[8px] rounded-xl shadow animate-pulse mt-1";
+                    claimBtn.innerText = "CLAIM REWARD";
+                    claimBtn.onclick = () => {
+                        coins += q.reward;
+                        questClaims[q.id] = true;
+                        localStorage.setItem('kite_coins_v24', coins);
+                        saveQuestData();
+                        audio.coin();
+                        renderQuestsUI();
+                        document.getElementById('hud-coins').innerText = coins;
+                    };
+                    card.appendChild(claimBtn);
+                } else if (isClaimed) {
+                    let claimedBadge = document.createElement('div');
+                    claimedBadge.className = "text-center text-[7px] arcade-font text-emerald-400 mt-1";
+                    claimedBadge.innerText = "✓ CLAIMED";
+                    card.appendChild(claimedBadge);
+                }
+
+                container.appendChild(card);
+            });
+
+            document.getElementById('quests-completed-count').innerText = `${completedCount}/${QUESTS_DATA.length}`;
+        }
 
         const KITE_SKINS = [
             { id: 'dalmatian', name: 'Dalmatian Dog', shape: 'dalmatian', primary: '#facc15', secondary: '#ffffff', tailColor: '#facc15' },
@@ -331,6 +487,27 @@
             { id: 'berry', name: 'Wild Berry', color: '#e11d48', style: 'heart' },
             { id: 'glimmer', name: 'Glimmer Dust', color: '#c084fc', style: 'sparkle' }
         ];
+
+        // --- Trial & Unlock Management ---
+        let skinTrials = JSON.parse(localStorage.getItem('kite_skin_trials_v1') || '{}');
+
+        function isItemUnlocked(category, id, index) {
+            if (index < 4) return true; // First 4 free in each category
+            let trialExp = skinTrials[id];
+            if (trialExp && Date.now() < trialExp) return true;
+            return false;
+        }
+
+        function getTrialTimeRemaining(id) {
+            let trialExp = skinTrials[id];
+            if (!trialExp || Date.now() >= trialExp) return null;
+            let diffHours = Math.ceil((trialExp - Date.now()) / (1000 * 60 * 60));
+            if (diffHours > 24) {
+                let days = Math.ceil(diffHours / 24);
+                return `${days}d trial left`;
+            }
+            return `${diffHours}h trial left`;
+        }
 
         const BOSS_ROSTER = [
             { name: "LVL 10 BOSS: MECHA-CAT PRIME", color: '#ff0055', maxHp: 180 },
@@ -468,7 +645,7 @@
         let pointerX = null;
         let pointerY = null;
         let isTouchMode = false;
-        const TOUCH_Y_OFFSET = 70; // Offsets kite 70px above user's finger on touch screens
+        const TOUCH_Y_OFFSET = 70;
 
         function resizeCanvas() {
             const container = canvas.parentElement;
@@ -517,6 +694,39 @@
         document.getElementById('tab-btn-tails').addEventListener('click', () => switchShopTab('tails'));
         document.getElementById('tab-btn-upgrades').addEventListener('click', () => switchShopTab('upgrades'));
 
+        function watchAdForTrial(category, skinId, skinName) {
+            let adScreen = document.getElementById('ad-screen');
+            let purposeEl = document.getElementById('ad-purpose-text');
+            purposeEl.innerText = `Watch ad to unlock 3-day trial for ${skinName}!`;
+            adScreen.classList.remove('hidden');
+
+            let countdown = 3;
+            let timerEl = document.getElementById('ad-timer');
+            timerEl.innerText = `Ad playing... ${countdown}s`;
+
+            let adInterval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    timerEl.innerText = `Ad playing... ${countdown}s`;
+                } else {
+                    clearInterval(adInterval);
+                    adScreen.classList.add('hidden');
+                    
+                    // Grant 3-day trial
+                    let threeDaysMs = 3 * 24 * 60 * 60 * 1000;
+                    skinTrials[skinId] = Date.now() + threeDaysMs;
+                    localStorage.setItem('kite_skin_trials_v1', JSON.stringify(skinTrials));
+
+                    // Equip it immediately
+                    if (category === 'kites') activeSkinId = skinId;
+                    else if (category === 'ropes') activeRopeId = skinId;
+                    else if (category === 'tails') activeTailId = skinId;
+                    saveSkins();
+                    renderShopUI();
+                }
+            }, 1000);
+        }
+
         function renderShopUI() {
             document.getElementById('shop-coins').innerText = coins;
             document.getElementById('hud-coins').innerText = coins;
@@ -525,10 +735,13 @@
                 let grid = document.getElementById('tab-content-kites');
                 grid.innerHTML = '';
 
-                KITE_SKINS.forEach(skin => {
+                KITE_SKINS.forEach((skin, idx) => {
                     let isEquipped = activeSkinId === skin.id;
+                    let unlocked = isItemUnlocked('kites', skin.id, idx);
+                    let trialText = getTrialTimeRemaining(skin.id);
+
                     let card = document.createElement('div');
-                    card.className = `p-2.5 rounded-2xl border flex flex-col items-center justify-between gap-1.5 transition cursor-pointer ${isEquipped ? 'bg-pink-500/20 border-pink-400' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'}`;
+                    card.className = `p-2.5 rounded-2xl border flex flex-col items-center justify-between gap-1.5 transition ${isEquipped ? 'bg-pink-500/20 border-pink-400' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'}`;
                     
                     let canvasThumb = document.createElement('canvas');
                     canvasThumb.width = 60; canvasThumb.height = 60;
@@ -538,17 +751,31 @@
                     card.appendChild(canvasThumb);
                     
                     let infoDiv = document.createElement('div');
-                    infoDiv.className = 'text-center';
+                    infoDiv.className = 'text-center w-full';
+                    
+                    let statusHtml = '';
+                    if (isEquipped) {
+                        statusHtml = `<div class="text-[7px] text-pink-400 font-bold">EQUIPPED</div>`;
+                    } else if (unlocked) {
+                        statusHtml = `<div class="text-[7px] text-emerald-400 font-bold">${trialText ? trialText : 'FREE'}</div>`;
+                    } else {
+                        statusHtml = `<div class="text-[7px] text-amber-400 font-bold">🔒 WATCH AD (3D)</div>`;
+                    }
+
                     infoDiv.innerHTML = `
                         <div class="text-[9px] font-bold text-white truncate max-w-[110px]">${skin.name}</div>
-                        <div class="text-[7px] text-pink-400 font-bold">${isEquipped ? 'EQUIPPED' : 'SELECT'}</div>
+                        ${statusHtml}
                     `;
                     card.appendChild(infoDiv);
 
                     card.onclick = () => {
-                        activeSkinId = skin.id;
-                        saveSkins();
-                        renderShopUI();
+                        if (unlocked) {
+                            activeSkinId = skin.id;
+                            saveSkins();
+                            renderShopUI();
+                        } else {
+                            watchAdForTrial('kites', skin.id, skin.name);
+                        }
                     };
                     grid.appendChild(card);
                 });
@@ -556,10 +783,13 @@
                 let ropeGrid = document.getElementById('tab-content-ropes');
                 ropeGrid.innerHTML = '';
 
-                ROPE_SKINS.forEach(rope => {
+                ROPE_SKINS.forEach((rope, idx) => {
                     let isEquipped = activeRopeId === rope.id;
+                    let unlocked = isItemUnlocked('ropes', rope.id, idx);
+                    let trialText = getTrialTimeRemaining(rope.id);
+
                     let card = document.createElement('div');
-                    card.className = `p-2.5 rounded-2xl border flex flex-col items-center justify-between gap-1.5 transition cursor-pointer ${isEquipped ? 'bg-sky-500/20 border-sky-400' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'}`;
+                    card.className = `p-2.5 rounded-2xl border flex flex-col items-center justify-between gap-1.5 transition ${isEquipped ? 'bg-sky-500/20 border-sky-400' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'}`;
                     
                     let rCanvas = document.createElement('canvas');
                     rCanvas.width = 60; rCanvas.height = 40;
@@ -580,17 +810,31 @@
                     card.appendChild(rCanvas);
 
                     let infoDiv = document.createElement('div');
-                    infoDiv.className = 'text-center';
+                    infoDiv.className = 'text-center w-full';
+                    
+                    let statusHtml = '';
+                    if (isEquipped) {
+                        statusHtml = `<div class="text-[7px] text-sky-400 font-bold">EQUIPPED</div>`;
+                    } else if (unlocked) {
+                        statusHtml = `<div class="text-[7px] text-emerald-400 font-bold">${trialText ? trialText : 'FREE'}</div>`;
+                    } else {
+                        statusHtml = `<div class="text-[7px] text-amber-400 font-bold">🔒 WATCH AD (3D)</div>`;
+                    }
+
                     infoDiv.innerHTML = `
                         <div class="text-[9px] font-bold text-white truncate max-w-[110px]">${rope.name}</div>
-                        <div class="text-[7px] text-sky-400 font-bold">${isEquipped ? 'EQUIPPED' : 'SELECT'}</div>
+                        ${statusHtml}
                     `;
                     card.appendChild(infoDiv);
 
                     card.onclick = () => {
-                        activeRopeId = rope.id;
-                        saveSkins();
-                        renderShopUI();
+                        if (unlocked) {
+                            activeRopeId = rope.id;
+                            saveSkins();
+                            renderShopUI();
+                        } else {
+                            watchAdForTrial('ropes', rope.id, rope.name);
+                        }
                     };
                     ropeGrid.appendChild(card);
                 });
@@ -598,10 +842,13 @@
                 let tailGrid = document.getElementById('tab-content-tails');
                 tailGrid.innerHTML = '';
 
-                TAIL_SKINS.forEach(tail => {
+                TAIL_SKINS.forEach((tail, idx) => {
                     let isEquipped = activeTailId === tail.id;
+                    let unlocked = isItemUnlocked('tails', tail.id, idx);
+                    let trialText = getTrialTimeRemaining(tail.id);
+
                     let card = document.createElement('div');
-                    card.className = `p-2.5 rounded-2xl border flex flex-col items-center justify-between gap-1.5 transition cursor-pointer ${isEquipped ? 'bg-amber-500/20 border-amber-400' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'}`;
+                    card.className = `p-2.5 rounded-2xl border flex flex-col items-center justify-between gap-1.5 transition ${isEquipped ? 'bg-amber-500/20 border-amber-400' : 'bg-slate-900/90 border-slate-800 hover:border-slate-700'}`;
                     
                     let tCanvas = document.createElement('canvas');
                     tCanvas.width = 60; tCanvas.height = 40;
@@ -619,17 +866,31 @@
                     card.appendChild(tCanvas);
 
                     let infoDiv = document.createElement('div');
-                    infoDiv.className = 'text-center';
+                    infoDiv.className = 'text-center w-full';
+                    
+                    let statusHtml = '';
+                    if (isEquipped) {
+                        statusHtml = `<div class="text-[7px] text-amber-400 font-bold">EQUIPPED</div>`;
+                    } else if (unlocked) {
+                        statusHtml = `<div class="text-[7px] text-emerald-400 font-bold">${trialText ? trialText : 'FREE'}</div>`;
+                    } else {
+                        statusHtml = `<div class="text-[7px] text-amber-400 font-bold">🔒 WATCH AD (3D)</div>`;
+                    }
+
                     infoDiv.innerHTML = `
                         <div class="text-[9px] font-bold text-white truncate max-w-[110px]">${tail.name}</div>
-                        <div class="text-[7px] text-amber-400 font-bold">${isEquipped ? 'EQUIPPED' : 'SELECT'}</div>
+                        ${statusHtml}
                     `;
                     card.appendChild(infoDiv);
 
                     card.onclick = () => {
-                        activeTailId = tail.id;
-                        saveSkins();
-                        renderShopUI();
+                        if (unlocked) {
+                            activeTailId = tail.id;
+                            saveSkins();
+                            renderShopUI();
+                        } else {
+                            watchAdForTrial('tails', tail.id, tail.name);
+                        }
                     };
                     tailGrid.appendChild(card);
                 });
@@ -671,7 +932,10 @@
             weatherEventTimer = 0;
             lightningFlashTimer = 0;
             freezeTimer = 0;
-            currentWeather = WEATHER_TYPES[0];
+
+            // Randomize starting weather condition cycle
+            currentWeather = WEATHER_TYPES[Math.floor(Math.random() * WEATHER_TYPES.length)];
+
             adAvailable = true;
 
             document.getElementById('boss-hud').classList.add('hidden');
@@ -695,6 +959,7 @@
 
             document.getElementById('menu-screen').classList.add('hidden');
             document.getElementById('shop-screen').classList.add('hidden');
+            document.getElementById('quests-screen').classList.add('hidden');
             document.getElementById('gameover-screen').classList.add('hidden');
         }
 
@@ -738,7 +1003,6 @@
             if (e.touches.length > 0) {
                 const rect = canvas.getBoundingClientRect();
                 pointerX = e.touches[0].clientX - rect.left;
-                // Offset pointerY so kite flies 70px above user's finger point
                 pointerY = (e.touches[0].clientY - rect.top) - TOUCH_Y_OFFSET;
             }
         }
@@ -810,6 +1074,7 @@
                 let nextIdx = (WEATHER_TYPES.findIndex(w => w.id === currentWeather.id) + 1) % WEATHER_TYPES.length;
                 currentWeather = WEATHER_TYPES[nextIdx];
                 document.getElementById('weather-banner').innerText = currentWeather.name;
+                updateQuestProgress('weatherShifts', 1, true);
             }
 
             weatherEventTimer++;
@@ -838,6 +1103,7 @@
             let baseVerticalSpeed = 0.6 + bossVerticalSpeedBonus;
             distanceTraveled += baseVerticalSpeed;
             altitude = Math.floor(distanceTraveled * 4);
+            updateQuestProgress('altitude', altitude);
 
             let newLevel = Math.floor(altitude / 1800) + 1;
             if (newLevel !== level && newLevel <= 100) {
@@ -1052,6 +1318,7 @@
                             bossProjectiles = [];
                             coins += 50 * (upgrades.starMultLevel + 1);
                             bossVerticalSpeedBonus += 0.2;
+                            updateQuestProgress('bossesKilled', 1, true);
                         }
                         continue;
                     }
@@ -1126,10 +1393,12 @@
                         coins += coinReward;
                         audio.coin();
                         addSparkles(p.x, p.y, '#facc15');
+                        updateQuestProgress('totalStars', coinReward, true);
                     } else if (p.type === 'shield') {
                         player.shieldHp = 1 + upgrades.shieldLevel;
                         audio.powerup();
                         addSparkles(p.x, p.y, '#38bdf8');
+                        updateQuestProgress('shieldsPicked', 1, true);
                     } else if (p.type === 'repair') {
                         player.hp = Math.min(player.maxHp, player.hp + 40);
                         audio.powerup();
@@ -1146,6 +1415,7 @@
                         player.laserTimer = 120;
                         audio.powerup();
                         addSparkles(p.x, p.y, '#f43f5e');
+                        updateQuestProgress('lasersPicked', 1, true);
                     }
                     powerups.splice(i, 1);
                     continue;
@@ -1227,7 +1497,6 @@
 
         function drawRealisticKite(skin, w, h, windTilt = 0, isFrozen = false, targetCtx = ctx) {
             targetCtx.save();
-            
             targetCtx.rotate(windTilt);
 
             let activeTail = TAIL_SKINS.find(t => t.id === activeTailId) || TAIL_SKINS[0];
@@ -1809,7 +2078,6 @@
                 }
             }
 
-            // Draw Touch Point Indicator Ring on Touch Devices
             if (isTouchMode && pointerX !== null && pointerY !== null) {
                 ctx.save();
                 let actualFingerY = pointerY + TOUCH_Y_OFFSET;
@@ -1952,7 +2220,6 @@
 
                     ctx.scale(pulseScale, pulseScale);
                     
-                    // --- Clear "POWER UP" Header Label ---
                     ctx.shadowColor = pColor;
                     ctx.shadowBlur = 12;
                     ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
@@ -1969,7 +2236,6 @@
                     ctx.textBaseline = 'middle';
                     ctx.fillText('POWER UP', 0, -30);
 
-                    // Power Up Body Card
                     ctx.shadowColor = pColor;
                     ctx.shadowBlur = 18;
 
@@ -2065,6 +2331,7 @@
         document.getElementById('watch-ad-btn').addEventListener('click', () => {
             document.getElementById('gameover-screen').classList.add('hidden');
             let adScreen = document.getElementById('ad-screen');
+            document.getElementById('ad-purpose-text').innerText = 'Watch this short message to fully repair your kite and resume flight!';
             adScreen.classList.remove('hidden');
 
             let countdown = 3;
@@ -2163,6 +2430,30 @@
             document.getElementById('menu-screen').classList.add('hidden');
             document.getElementById('gameover-screen').classList.add('hidden');
             document.getElementById('shop-screen').classList.remove('hidden');
+        });
+
+        document.getElementById('quests-btn').addEventListener('click', () => {
+            if (gameState === 'PLAYING') gameState = 'PAUSED';
+            renderQuestsUI();
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('quests-screen').classList.remove('hidden');
+        });
+
+        document.getElementById('top-quests-btn').addEventListener('click', () => {
+            if (gameState === 'PLAYING') gameState = 'PAUSED';
+            renderQuestsUI();
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('gameover-screen').classList.add('hidden');
+            document.getElementById('quests-screen').classList.remove('hidden');
+        });
+
+        document.getElementById('back-from-quests').addEventListener('click', () => {
+            document.getElementById('quests-screen').classList.add('hidden');
+            if (gameState === 'PAUSED') {
+                gameState = 'PLAYING';
+            } else {
+                document.getElementById('menu-screen').classList.remove('hidden');
+            }
         });
 
         document.getElementById('back-to-menu').addEventListener('click', () => {
