@@ -142,6 +142,7 @@
                 <div id="tab-content-tails" class="grid grid-cols-2 gap-2.5 hidden"></div>
                 <div id="tab-content-upgrades" class="flex flex-col gap-3 hidden">
                     <div class="text-[10px] font-bold text-slate-300 tracking-wider">PERFORMANCE UPGRADES</div>
+                    
                     <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
                         <div>
                             <div class="text-xs font-bold text-white">Reinforced Line</div>
@@ -149,12 +150,45 @@
                         </div>
                         <button id="buy-string" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold arcade-font text-[8px] rounded-xl shadow">50s</button>
                     </div>
+
                     <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
                         <div>
                             <div class="text-xs font-bold text-white">Aerodynamic Frame</div>
                             <div class="text-[9px] text-slate-400" id="desc-speed">+Agility Speed</div>
                         </div>
                         <button id="buy-speed" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold arcade-font text-[8px] rounded-xl shadow">75s</button>
+                    </div>
+
+                    <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-white">Magnet Range</div>
+                            <div class="text-[9px] text-purple-400" id="desc-magnet">+Attract Radius</div>
+                        </div>
+                        <button id="buy-magnet" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold arcade-font text-[8px] rounded-xl shadow">60s</button>
+                    </div>
+
+                    <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-white">Star Multiplier</div>
+                            <div class="text-[9px] text-amber-300" id="desc-starmult">Extra Stars Collected</div>
+                        </div>
+                        <button id="buy-starmult" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold arcade-font text-[8px] rounded-xl shadow">100s</button>
+                    </div>
+
+                    <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-white">Reinforced Shield</div>
+                            <div class="text-[9px] text-sky-400" id="desc-shield">Shield Takes Extra Hits</div>
+                        </div>
+                        <button id="buy-shield" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold arcade-font text-[8px] rounded-xl shadow">80s</button>
+                    </div>
+
+                    <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-white">Power Blaster</div>
+                            <div class="text-[9px] text-rose-400" id="desc-powerdmg">+Boss Damage</div>
+                        </div>
+                        <button id="buy-powerdmg" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold arcade-font text-[8px] rounded-xl shadow">90s</button>
                     </div>
                 </div>
             </div>
@@ -329,13 +363,13 @@
                 
                 let levelScalingFactor = Math.min(1.0, 0.6 + (altitude / 5000));
                 let isFastHeavy = Math.random() < (0.35 * levelScalingFactor);
-                this.size = isFastHeavy ? (Math.floor(Math.random() * 20) + 40) * levelScalingFactor : (Math.floor(Math.random() * 14) + 20);
-                this.x = Math.random() * (canvas.width - 60) + 30;
+                this.size = isFastHeavy ? (Math.floor(Math.random() * 20) + 42) * levelScalingFactor : (Math.floor(Math.random() * 14) + 26);
+                this.x = Math.random() * (canvas.width - 70) + 35;
                 this.y = -60;
                 this.vx = (Math.random() - 0.5) * (isFastHeavy ? 3.0 : 1.5);
                 this.vy = (isFastHeavy ? Math.random() * 4.0 + 5.0 : Math.random() * 2.2 + 1.8) * Math.max(0.75, levelScalingFactor) * hazardMult;
                 this.rotation = 0;
-                this.rotSpeed = (Math.random() - 0.5) * 0.2;
+                this.rotSpeed = (Math.random() - 0.5) * 0.15;
             }
 
             update() {
@@ -348,12 +382,25 @@
                 ctx.save();
                 ctx.translate(this.x, this.y);
                 ctx.rotate(this.rotation);
+
+                let boxSize = this.size * 1.15;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 22;
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 3.5;
+                
+                ctx.beginPath();
+                ctx.roundRect(-boxSize/2, -boxSize/2, boxSize, boxSize, 12);
+                ctx.fill();
+                ctx.stroke();
+
                 ctx.font = `${this.size}px sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.shadowColor = '#000000';
-                ctx.shadowBlur = 18;
-                ctx.lineWidth = 6;
+                ctx.shadowBlur = 10;
+                ctx.lineWidth = 4;
                 ctx.strokeStyle = '#020617';
                 ctx.strokeText(this.char, 0, 0);
                 ctx.fillText(this.char, 0, 0);
@@ -361,7 +408,7 @@
             }
 
             getBounds() {
-                return { x: this.x, y: this.y, radius: this.size * 0.42 };
+                return { x: this.x, y: this.y, radius: (this.size * 1.15) * 0.5 };
             }
         }
 
@@ -396,13 +443,17 @@
         let player = {
             x: 0, y: 0, targetX: 0, targetY: 0, width: 64, height: 68,
             vx: 0, maxHp: 150, hp: 150,
-            speed: 6.0, shield: false, magnetTimer: 0, vortexTimer: 0, laserTimer: 0,
+            speed: 6.0, shieldHp: 0, magnetTimer: 0, vortexTimer: 0, laserTimer: 0,
             powerCooldown: 0, invincibleTimer: 0
         };
 
         let upgrades = {
             stringLevel: parseInt(localStorage.getItem('kite_up_string_v24') || '0'),
-            speedLevel: parseInt(localStorage.getItem('kite_up_speed_v24') || '0')
+            speedLevel: parseInt(localStorage.getItem('kite_up_speed_v24') || '0'),
+            magnetLevel: parseInt(localStorage.getItem('kite_up_magnet_v24') || '0'),
+            starMultLevel: parseInt(localStorage.getItem('kite_up_starmult_v24') || '0'),
+            shieldLevel: parseInt(localStorage.getItem('kite_up_shield_v24') || '0'),
+            powerDmgLevel: parseInt(localStorage.getItem('kite_up_powerdmg_v24') || '0')
         };
 
         let particles = [];
@@ -584,8 +635,17 @@
 
             let stringCost = 50 * (upgrades.stringLevel + 1);
             let speedCost = 75 * (upgrades.speedLevel + 1);
+            let magnetCost = 60 * (upgrades.magnetLevel + 1);
+            let starMultCost = 100 * (upgrades.starMultLevel + 1);
+            let shieldCost = 80 * (upgrades.shieldLevel + 1);
+            let powerDmgCost = 90 * (upgrades.powerDmgLevel + 1);
+
             document.getElementById('buy-string').innerText = upgrades.stringLevel >= 3 ? 'MAX' : `${stringCost}s`;
             document.getElementById('buy-speed').innerText = upgrades.speedLevel >= 3 ? 'MAX' : `${speedCost}s`;
+            document.getElementById('buy-magnet').innerText = upgrades.magnetLevel >= 3 ? 'MAX' : `${magnetCost}s`;
+            document.getElementById('buy-starmult').innerText = upgrades.starMultLevel >= 3 ? 'MAX' : `${starMultCost}s`;
+            document.getElementById('buy-shield').innerText = upgrades.shieldLevel >= 2 ? 'MAX' : `${shieldCost}s`;
+            document.getElementById('buy-powerdmg').innerText = upgrades.powerDmgLevel >= 3 ? 'MAX' : `${powerDmgCost}s`;
         }
 
         function startGame() {
@@ -619,7 +679,7 @@
             player.maxHp = 150 + (upgrades.stringLevel * 50);
             player.hp = player.maxHp;
             player.speed = 5.5 + (upgrades.speedLevel * 0.8);
-            player.shield = false;
+            player.shieldHp = 0;
             player.magnetTimer = 0;
             player.vortexTimer = 0;
             player.laserTimer = 0;
@@ -755,8 +815,8 @@
                 if (currentWeather.id === 'electric') {
                     lightningFlashTimer = 35;
                     audio.hit();
-                    if (player.shield) {
-                        player.shield = false;
+                    if (player.shieldHp > 0) {
+                        player.shieldHp--;
                     } else if (player.invincibleTimer === 0) {
                         player.hp -= 15;
                         addSparkles(player.x, player.y, '#38bdf8');
@@ -817,8 +877,8 @@
 
                 let distToPlayer = Math.hypot(player.x - bp.x, player.y - bp.y);
                 if (distToPlayer < 30) {
-                    if (player.shield) {
-                        player.shield = false;
+                    if (player.shieldHp > 0) {
+                        player.shieldHp--;
                         addSparkles(bp.x, bp.y, '#38bdf8');
                         bossProjectiles.splice(i, 1);
                         continue;
@@ -885,6 +945,8 @@
                 }
             }
 
+            let powerDmgMult = 1.0 + (upgrades.powerDmgLevel * 0.25);
+
             if (player.laserTimer > 0) {
                 for (let i = dashHazards.length - 1; i >= 0; i--) {
                     let dh = dashHazards[i];
@@ -901,7 +963,7 @@
                     }
                 }
                 if (activeBoss && Math.abs(activeBoss.x - player.x) < 80) {
-                    activeBoss.currentHp -= 0.6;
+                    activeBoss.currentHp -= 0.6 * powerDmgMult;
                 }
             }
 
@@ -976,7 +1038,7 @@
                     let bdx = pr.x - activeBoss.x;
                     let bdy = pr.y - activeBoss.y;
                     if (Math.sqrt(bdx*bdx + bdy*bdy) < 45) {
-                        activeBoss.currentHp -= 25;
+                        activeBoss.currentHp -= 25 * powerDmgMult;
                         addSparkles(activeBoss.x, activeBoss.y, activeBoss.color);
                         projectiles.splice(i, 1);
                         if (activeBoss.currentHp <= 0) {
@@ -985,7 +1047,7 @@
                             document.getElementById('power-hud-btn').classList.add('hidden');
                             activeBoss = null;
                             bossProjectiles = [];
-                            coins += 50;
+                            coins += 50 * (upgrades.starMultLevel + 1);
                             bossVerticalSpeedBonus += 0.2;
                         }
                         continue;
@@ -1014,8 +1076,8 @@
                 let box = dh.getBounds();
                 let distToPlayer = Math.hypot(player.x - box.x, player.y - box.y);
                 if (distToPlayer < box.radius + 15) {
-                    if (player.shield) {
-                        player.shield = false;
+                    if (player.shieldHp > 0) {
+                        player.shieldHp--;
                         addSparkles(dh.x, dh.y, '#38bdf8');
                         dashHazards.splice(i, 1);
                         continue;
@@ -1034,6 +1096,8 @@
                 if (dh.y > canvas.height + 80) dashHazards.splice(i, 1);
             }
 
+            let activeMagnetRadius = 420 + (upgrades.magnetLevel * 120);
+
             for (let i = powerups.length - 1; i >= 0; i--) {
                 let p = powerups[i];
                 p.y += p.vy;
@@ -1044,21 +1108,23 @@
                     let dx = player.x - p.x;
                     let dy = player.y - p.y;
                     let dist = Math.sqrt(dx*dx + dy*dy);
-                    if (dist < 420) {
+                    if (dist < activeMagnetRadius) {
                         p.x += dx * 0.18;
                         p.y += dy * 0.18;
                     }
                 }
 
                 if (Math.abs(player.x - p.x) < 32 && Math.abs(player.y - p.y) < 32) {
+                    let starBonusMultiplier = 1 + upgrades.starMultLevel;
+
                     if (p.type === 'coin') {
-                        let coinReward = Math.random() < 0.5 ? 1 : 2;
+                        let coinReward = (Math.random() < 0.5 ? 1 : 2) * starBonusMultiplier;
                         sessionCoins += coinReward;
                         coins += coinReward;
                         audio.coin();
                         addSparkles(p.x, p.y, '#facc15');
                     } else if (p.type === 'shield') {
-                        player.shield = true;
+                        player.shieldHp = 1 + upgrades.shieldLevel;
                         audio.powerup();
                         addSparkles(p.x, p.y, '#38bdf8');
                     } else if (p.type === 'repair') {
@@ -1630,7 +1696,6 @@
                 targetCtx.fillStyle = '#ef4444'; targetCtx.beginPath(); targetCtx.arc(0, 14, 5, 0, Math.PI*2); targetCtx.fill();
             }
 
-            // Glow Frost Crystals directly on the kite when frozen
             if (isFrozen) {
                 targetCtx.save();
                 targetCtx.shadowColor = '#ffffff';
@@ -1638,7 +1703,6 @@
                 targetCtx.fillStyle = 'rgba(224, 242, 254, 0.85)';
                 targetCtx.strokeStyle = '#bae6fd';
                 targetCtx.lineWidth = 2;
-                // Draw sparkling frost patches/crystals over the surface
                 [-14, 0, 14].forEach(fx => {
                     targetCtx.beginPath();
                     targetCtx.arc(fx, -12, 5, 0, Math.PI * 2);
@@ -1674,7 +1738,6 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            // Weather Background Effects Rendering with Directional Wind support
             if (currentWeather.id === 'electric' && lightningFlashTimer > 0) {
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1721,7 +1784,6 @@
                     ctx.stroke();
                 }
             } else if (currentWeather.id === 'snow') {
-                // Detailed snowflake shapes floating in the background
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
                 ctx.shadowColor = '#38bdf8';
                 ctx.shadowBlur = 8;
@@ -1808,8 +1870,8 @@
             let ctrlX = (canvas.width / 2 + player.x) / 2 + (player.x - canvas.width / 2) * 0.35;
             let ctrlY = (canvas.height + player.y) / 2;
             ctx.quadraticCurveTo(ctrlX, ctrlY, player.x, player.y + player.height / 2);
-            ctx.strokeStyle = player.shield ? '#38bdf8' : (player.laserTimer > 0 ? '#f43f5e' : activeRope.color);
-            ctx.lineWidth = player.shield ? 4 : activeRope.width;
+            ctx.strokeStyle = player.shieldHp > 0 ? '#38bdf8' : (player.laserTimer > 0 ? '#f43f5e' : activeRope.color);
+            ctx.lineWidth = player.shieldHp > 0 ? 4 : activeRope.width;
             ctx.stroke();
             ctx.restore();
 
@@ -1857,7 +1919,7 @@
                     ctx.rotate(-p.spin);
                     ctx.fillStyle = '#ffffff';
                     ctx.font = 'bold 8px "Press Start 2P", monospace';
-                    ctx.fillText('COIN', 0, 26);
+                    ctx.fillText('STAR', 0, 26);
                 } else {
                     let pColor = p.type === 'shield' ? '#38bdf8' : (p.type === 'repair' ? '#10b981' : (p.type === 'magnet' ? '#a855f7' : (p.type === 'vortex' ? '#c084fc' : '#f43f5e')));
                     let pIcon = p.type === 'shield' ? '🛡️' : (p.type === 'repair' ? '💚' : (p.type === 'magnet' ? '🧲' : (p.type === 'vortex' ? '🌀' : '⚡')));
@@ -1865,6 +1927,25 @@
                     let pulseScale = 1 + Math.sin(p.pulse) * 0.12;
 
                     ctx.scale(pulseScale, pulseScale);
+                    
+                    // --- Clear "POWER UP" Header Label ---
+                    ctx.shadowColor = pColor;
+                    ctx.shadowBlur = 12;
+                    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+                    ctx.strokeStyle = pColor;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.roundRect(-26, -38, 52, 14, 4);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.fillStyle = pColor;
+                    ctx.font = 'bold 6px "Press Start 2P", monospace';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('POWER UP', 0, -30);
+
+                    // Power Up Body Card
                     ctx.shadowColor = pColor;
                     ctx.shadowBlur = 18;
 
@@ -1915,7 +1996,7 @@
                 ctx.fill();
             }
 
-            if (player.shield) {
+            if (player.shieldHp > 0) {
                 ctx.strokeStyle = '#38bdf8';
                 ctx.lineWidth = 4;
                 ctx.shadowColor = '#38bdf8';
@@ -1925,6 +2006,11 @@
                 ctx.stroke();
                 ctx.fillStyle = 'rgba(56, 189, 248, 0.12)';
                 ctx.fill();
+
+                ctx.fillStyle = '#38bdf8';
+                ctx.font = 'bold 9px "Press Start 2P", monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(`x${player.shieldHp}`, 0, -player.height * 0.7);
             }
             ctx.restore();
         }
@@ -2088,6 +2174,50 @@
                 coins -= cost;
                 upgrades.speedLevel++;
                 localStorage.setItem('kite_up_speed_v24', upgrades.speedLevel);
+                localStorage.setItem('kite_coins_v24', coins);
+                renderShopUI();
+            }
+        });
+
+        document.getElementById('buy-magnet').addEventListener('click', () => {
+            let cost = 60 * (upgrades.magnetLevel + 1);
+            if (upgrades.magnetLevel < 3 && coins >= cost) {
+                coins -= cost;
+                upgrades.magnetLevel++;
+                localStorage.setItem('kite_up_magnet_v24', upgrades.magnetLevel);
+                localStorage.setItem('kite_coins_v24', coins);
+                renderShopUI();
+            }
+        });
+
+        document.getElementById('buy-starmult').addEventListener('click', () => {
+            let cost = 100 * (upgrades.starMultLevel + 1);
+            if (upgrades.starMultLevel < 3 && coins >= cost) {
+                coins -= cost;
+                upgrades.starMultLevel++;
+                localStorage.setItem('kite_up_starmult_v24', upgrades.starMultLevel);
+                localStorage.setItem('kite_coins_v24', coins);
+                renderShopUI();
+            }
+        });
+
+        document.getElementById('buy-shield').addEventListener('click', () => {
+            let cost = 80 * (upgrades.shieldLevel + 1);
+            if (upgrades.shieldLevel < 2 && coins >= cost) {
+                coins -= cost;
+                upgrades.shieldLevel++;
+                localStorage.setItem('kite_up_shield_v24', upgrades.shieldLevel);
+                localStorage.setItem('kite_coins_v24', coins);
+                renderShopUI();
+            }
+        });
+
+        document.getElementById('buy-powerdmg').addEventListener('click', () => {
+            let cost = 90 * (upgrades.powerDmgLevel + 1);
+            if (upgrades.powerDmgLevel < 3 && coins >= cost) {
+                coins -= cost;
+                upgrades.powerDmgLevel++;
+                localStorage.setItem('kite_up_powerdmg_v24', upgrades.powerDmgLevel);
                 localStorage.setItem('kite_coins_v24', coins);
                 renderShopUI();
             }
